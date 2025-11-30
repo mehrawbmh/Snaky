@@ -43,6 +43,9 @@ let isDrunk = false;
 let drunkEndTime = 0;
 let drunkMoveCounter = 0;
 
+// Food timer constant (5 seconds)
+const FOOD_LIFETIME = 5000; // milliseconds
+
 // Settings variables
 let playerName = "Player";
 let snakeColor = '#0000ff';
@@ -352,7 +355,8 @@ function generateFood() {
       y: Math.floor(Math.random() * tileCount),
       type: selectedType.type,
       points: selectedType.points,
-      name: selectedType.name
+      name: selectedType.name,
+      spawnTime: Date.now() // Track when food was created
     };
     
     validPosition = true;
@@ -797,6 +801,13 @@ function gameLoop(currentTime) {
   // Stop if game over
   if (gameOver || !snake || snake.length === 0) return;
   
+  // Check if food has expired (existed for more than 5 seconds)
+  if (food && food.spawnTime && Date.now() - food.spawnTime > FOOD_LIFETIME) {
+    log('Food disappeared! New food spawned.');
+    updateStatus('Food disappeared!');
+    generateFood();
+  }
+  
   // Only move snake if there's velocity (player has pressed a direction key)
   if (velocityX !== 0 || velocityY !== 0) {
     // Check if drunk effect should end
@@ -920,6 +931,38 @@ function gameLoop(currentTime) {
 function drawFood(food) {
   const centerX = food.x * gridSize + gridSize/2;
   const centerY = food.y * gridSize + gridSize/2;
+  
+  // Draw timer circle around food
+  if (food.spawnTime) {
+    const timeElapsed = Date.now() - food.spawnTime;
+    const timeRemaining = FOOD_LIFETIME - timeElapsed;
+    const timerProgress = Math.max(0, timeRemaining / FOOD_LIFETIME);
+    
+    // Draw background circle (gray)
+    ctx.strokeStyle = 'rgba(128, 128, 128, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, gridSize/2, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Draw progress arc (color changes based on time remaining)
+    if (timerProgress > 0) {
+      let timerColor;
+      if (timerProgress > 0.6) {
+        timerColor = '#00FF00'; // Green
+      } else if (timerProgress > 0.3) {
+        timerColor = '#FFA500'; // Orange
+      } else {
+        timerColor = '#FF0000'; // Red
+      }
+      
+      ctx.strokeStyle = timerColor;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, gridSize/2, -Math.PI/2, -Math.PI/2 + (timerProgress * Math.PI * 2));
+      ctx.stroke();
+    }
+  }
   
   switch(food.type) {
     case 'apple':

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snake Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Log Display -->
+  <div id="logDisplay" class="log-display hidden"></div>
+  
+  <div class="game-container">
+    <!-- Header with Score, Speed, and Settings Button -->
+    <div class="header">
+      <div class="score-info">
+        <div class="score">Score: <span id="score">0</span></div>
+        <div class="speed">Speed: <span id="speed">1x</span></div>
+      </div>
+      <button class="settings-btn" onclick="openSettings()">⚙️ Settings</button>
+    </div>
+    
+    <div class="status" id="status">Ready</div>
+    
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
+      <div class="play-button-overlay" id="playButton" onclick="startGame()"></div>
+    </div>
+    
+    <!-- Scoreboard (can be toggled) -->
+    <div id="scoreboard" class="scoreboard">
+      <h3>🏆 Top Scores</h3>
+      <div id="scoreList">
+        <!-- Scores will be added here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <h2>⚙️ Game Settings</h2>
+      
+      <!-- Player Name -->
+      <div class="setting-group">
+        <label for="playerNameInput">Player Name:</label>
+        <input type="text" id="playerNameInput" placeholder="Enter your name" maxlength="15">
+      </div>
+      
+      <!-- Snake Color -->
+      <div class="setting-group">
+        <label for="snakeColorInput">Snake Color:</label>
+        <div class="color-row">
+          <input type="color" id="snakeColorInput" value="#0000ff">
+          <span id="snakeColorDisplay">#0000ff</span>
+        </div>
+      </div>
+      
+      <!-- Snake Template -->
+      <div class="setting-group">
+        <label for="templateSelect">Snake Template:</label>
+        <select id="templateSelect">
+          <option value="classic">Classic Gradient</option>
+          <option value="rainbow">Rainbow</option>
+          <option value="fire">Fire</option>
+          <option value="ocean">Ocean</option>
+          <option value="neon">Neon Pulse</option>
+          <option value="metal">Metallic</option>
+        </select>
+      </div>
+      
+      <!-- Obstacle Colors -->
+      <div class="setting-group">
+        <label for="obstacleColorMode">Obstacle Colors:</label>
+        <select id="obstacleColorMode">
+          <option value="random">Random Colors</option>
+          <option value="single">Single Color</option>
+        </select>
+        <div id="singleObstacleColorPicker" style="margin-top: 10px; display: none;">
+          <input type="color" id="singleObstacleColor" value="#8B0000">
+        </div>
+      </div>
+      
+      <!-- Bullet Color -->
+      <div class="setting-group">
+        <label for="bulletColorInput">Bullet Color:</label>
+        <div class="color-row">
+          <input type="color" id="bulletColorInput" value="#ffff00">
+          <span id="bulletColorDisplay">#ffff00</span>
+        </div>
+      </div>
+      
+      <!-- Bullet Size -->
+      <div class="setting-group">
+        <label for="bulletSizeInput">Bullet Size (1-10):</label>
+        <input type="number" id="bulletSizeInput" min="1" max="10" value="3">
+      </div>
+      
+      <!-- Bullet Speed -->
+      <div class="setting-group">
+        <label for="bulletSpeedInput">Bullet Speed (1-5):</label>
+        <input type="number" id="bulletSpeedInput" min="1" max="5" value="1">
+      </div>
+      
+      <!-- Toggle Scoreboard -->
+      <div class="setting-group">
+        <div class="checkbox-row">
+          <input type="checkbox" id="showScoreboardToggle" checked>
+          <label for="showScoreboardToggle">Show Scoreboard</label>
+        </div>
+      </div>
+      
+      <!-- Toggle Logging -->
+      <div class="setting-group">
+        <div class="checkbox-row">
+          <input type="checkbox" id="showLoggingToggle">
+          <label for="showLoggingToggle">Enable Logging</label>
+        </div>
+      </div>
+      
+      <!-- Modal Buttons -->
+      <div class="modal-buttons">
+        <button onclick="applySettings()">Apply & Start</button>
+        <button class="close-btn" onclick="closeSettings()">Cancel</button>
+      </div>
+      
+      <div style="margin-top: 15px; font-size: 12px; color: #666; text-align: center;">
+        <strong>Controls:</strong> Arrow Keys or WASD | Space: Speed+ | Shift+Space: Speed- | Enter: Shoot
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

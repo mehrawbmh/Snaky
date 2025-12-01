@@ -79,25 +79,26 @@ export function showGameOver(canvas, score, playerName) {
   ctx.textBaseline = 'middle';
 
   // Calculate positions to avoid the centered Play Button (approx 120px height)
+  // Button occupies roughly centerY - 60 to centerY + 60
   const centerY = canvas.height / 2;
   
-  // Title above the button
+  // Title higher up
   ctx.font = 'bold 40px Arial';
   ctx.fillStyle = '#ff3333';
   ctx.shadowColor = '#ff0000';
   ctx.shadowBlur = 10;
-  ctx.fillText('GAME OVER', canvas.width / 2, centerY - 100);
+  ctx.fillText('GAME OVER', canvas.width / 2, centerY - 150);
   ctx.shadowBlur = 0;
   
-  // Score below title, above button
+  // Score below title, but still well above the button
   ctx.font = 'bold 24px Arial';
   ctx.fillStyle = 'white';
-  ctx.fillText(`Final Score: ${score}`, canvas.width / 2, centerY - 60);
+  ctx.fillText(`Final Score: ${score}`, canvas.width / 2, centerY - 100);
   
-  // Instructions below the button
+  // Instructions well below the button
   ctx.font = '16px Arial';
   ctx.fillStyle = '#cccccc';
-  ctx.fillText(`${playerName}, press SPACE or click PLAY to restart`, canvas.width / 2, centerY + 90);
+  ctx.fillText(`${playerName}, press SPACE or click PLAY to restart`, canvas.width / 2, centerY + 100);
   
   showPlayButton();
 }

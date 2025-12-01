@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/mehrawbmh/Snaky#readme",
   "devDependencies": {
-    "vite": "^7.2.6"
+    "vite": "^5.4.21"
   }
 }

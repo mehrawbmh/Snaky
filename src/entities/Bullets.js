@@ -39,21 +39,26 @@ export class BulletManager {
       bullet.y += bullet.vy;
       bullet.age++;
       
-      // Wrap around
-      if (bullet.x < 0) bullet.x = tileCount - 1;
-      if (bullet.y < 0) bullet.y = tileCount - 1;
-      if (bullet.x >= tileCount) bullet.x = 0;
-      if (bullet.y >= tileCount) bullet.y = 0;
+      // Remove if out of bounds (Task 4)
+      if (bullet.x < 0 || bullet.y < 0 || bullet.x >= tileCount || bullet.y >= tileCount) {
+        this.bullets.splice(i, 1);
+        continue;
+      }
       
       if (bullet.age > bullet.maxAge) {
         this.bullets.splice(i, 1);
         continue;
       }
       
-      // Check collision with obstacles
+      // Check collision with obstacles (Task 3)
+      // Use rounded coordinates for better grid collision detection
+      const bulletGridX = Math.round(bullet.x);
+      const bulletGridY = Math.round(bullet.y);
+
       for (let j = obstacles.length - 1; j >= 0; j--) {
         const obstacle = obstacles[j];
-        if (Math.abs(bullet.x - obstacle.x) < 0.5 && Math.abs(bullet.y - obstacle.y) < 0.5) {
+        // Check grid position match
+        if (bulletGridX === obstacle.x && bulletGridY === obstacle.y) {
           obstacle.health--;
           
           if (onObstacleHit) {

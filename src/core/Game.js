@@ -31,11 +31,18 @@ export class Game {
     this.lastFrameTime = 0;
     this.gameLoopId = null;
     
+    // Time accumulator for smooth loop
+    this.timeAccumulator = 0;
+    
     // Drunk state
     this.isDrunk = false;
     this.drunkStartTime = 0;
     this.drunkEndTime = 0;
     this.drunkMoveCounter = 0;
+    
+    // Dying Animation State
+    this.isDying = false;
+    this.dyingStartTime = 0;
     
     // Food effect state
     this.foodEffectActive = false;
@@ -69,8 +76,8 @@ export class Game {
   
   setupCanvasResize() {
     window.addEventListener('resize', () => {
-      if (this.gameRunning) {
-        this.draw();
+      if (this.gameRunning || this.isDying) {
+        this.draw(1); // Force draw
       }
     });
   }
@@ -90,6 +97,8 @@ export class Game {
     this.gameOver = false;
     this.gameRunning = true;
     this.lastFrameTime = 0;
+    this.timeAccumulator = 0;
+    this.isDying = false; // Reset dying state
     
     // Reset managers
     this.bulletManager.reset();
@@ -134,6 +143,7 @@ export class Game {
     updateStatus("Ready");
     
     // Start game loop
+    this.lastFrameTime = performance.now();
     this.gameLoopId = requestAnimationFrame((time) => this.gameLoop(time));
   }
   
@@ -143,28 +153,52 @@ export class Game {
   }
   
   gameLoop(currentTime) {
-    if (!this.gameRunning) return;
+    if (!this.gameRunning && !this.isDying) return;
     
     this.gameLoopId = requestAnimationFrame((time) => this.gameLoop(time));
     
-    if (this.lastFrameTime === 0) {
-      this.lastFrameTime = currentTime;
-      this.draw();
-      return;
+    // Handle Dying Animation
+    if (this.isDying) {
+        const dyingDuration = 1500;
+        const progress = (currentTime - this.dyingStartTime) / dyingDuration;
+        
+        if (progress >= 1) {
+            this.isDying = false;
+            this.showGameOverScreen();
+            return;
+        }
+        
+        // Draw dying frame
+        this.draw(1, progress);
+        return;
     }
-    
+
     const deltaTime = currentTime - this.lastFrameTime;
-    const targetDelay = SPEEDS[this.currentSpeedIndex].delay;
-    
-    if (deltaTime < targetDelay) {
-      return;
-    }
-    
     this.lastFrameTime = currentTime;
     
-    if (this.gameOver) return;
+    // Cap delta time to prevent spiral of death on lag
+    const safeDelta = Math.min(deltaTime, 100);
     
-    // Check if food expired
+    this.timeAccumulator += safeDelta;
+    
+    const targetDelay = SPEEDS[this.currentSpeedIndex].delay;
+    
+    // Update Logic Fixed Timestep
+    while (this.timeAccumulator >= targetDelay) {
+        this.update();
+        this.timeAccumulator -= targetDelay;
+    }
+    
+    // Interpolation factor for smooth rendering
+    const alpha = this.timeAccumulator / targetDelay;
+    
+    this.draw(alpha);
+  }
+
+  update() {
+      if (this.gameOver || this.isDying) return;
+
+      // Check if food expired
     if (this.foodManager.isExpired()) {
       log('Food disappeared! New food spawned.');
       updateStatus('Food disappeared!');
@@ -253,13 +287,13 @@ export class Game {
       
       // Check self collision
       if (this.snake.checkSelfCollision(newHead.x, newHead.y)) {
-        this.endGame();
+        this.triggerGameOverSequence();
         return;
       }
       
       // Check obstacle collision
       if (this.obstacleManager.checkCollision(newHead.x, newHead.y)) {
-        this.endGame();
+        this.triggerGameOverSequence();
         return;
       }
       
@@ -307,8 +341,6 @@ export class Game {
       
       this.particleManager.limitParticles();
     }
-    
-    this.draw();
   }
   
   handleFoodEaten(food) {
@@ -316,7 +348,7 @@ export class Game {
     if (food.type === 'toxic') {
       log('☠️ Toxic food eaten! GAME OVER!');
       updateStatus('☠️ Toxic! You died!');
-      this.endGame();
+      this.triggerGameOverSequence();
       return;
     }
     
@@ -367,7 +399,7 @@ export class Game {
     );
   }
   
-  draw() {
+  draw(alpha = 1, dyingProgress = 0) {
     const ctx = this.canvasManager.getContext();
     const gridSize = this.canvasManager.getGridSize();
     const currentSettings = this.settings.getAllSettings();
@@ -381,10 +413,7 @@ export class Game {
       snakeColor = this.foodEffectColor;
       snakeTemplate = this.foodEffectTemplate;
     }
-    // If we're in transition (pending effect), keep showing current active effect
-    // This prevents flashing back to original color during the 200ms delay
     else if (this.foodEffectStartTime > 0 && this.foodEffectColor) {
-      // Keep showing the current effect during transition to new effect
       snakeColor = this.foodEffectColor;
       snakeTemplate = this.foodEffectTemplate;
     }
@@ -394,13 +423,29 @@ export class Game {
     this.bulletManager.draw(ctx, gridSize);
     this.particleManager.updateAndDrawExplosions(ctx);
     this.foodManager.draw(ctx, gridSize);
-    this.snake.draw(ctx, gridSize, snakeColor, snakeTemplate);
+    
+    // Draw snake with interpolation or dying effect
+    this.snake.draw(ctx, gridSize, snakeColor, snakeTemplate, alpha, dyingProgress);
+    
     this.particleManager.updateAndDrawParticles(ctx);
   }
   
-  endGame() {
+  triggerGameOverSequence() {
+      this.isDying = true;
+      this.gameRunning = false; // Stop logic updates
+      this.dyingStartTime = Date.now();
+      
+      // Visual feedback
+      log('💥 CRASH! Game Over sequence initiated...');
+      this.snake.triggerDeathAnimation();
+      
+      // Shake effect could be here
+  }
+
+  showGameOverScreen() {
     this.gameOver = true;
     this.gameRunning = false;
+    this.isDying = false;
     
     if (this.gameLoopId) {
       cancelAnimationFrame(this.gameLoopId);
@@ -417,10 +462,15 @@ export class Game {
     
     showGameOver(this.canvasManager.getCanvas(), this.score, this.settings.getAllSettings().playerName);
   }
+
+  // Kept for compatibility if needed, but showGameOverScreen is the new internal one
+  endGame() {
+      this.triggerGameOverSequence();
+  }
   
   shootBullet() {
     const velocity = this.snake.getVelocity();
-    if ((velocity.x !== 0 || velocity.y !== 0) && !this.gameOver) {
+    if ((velocity.x !== 0 || velocity.y !== 0) && !this.gameOver && !this.isDying) {
       const success = this.bulletManager.shoot(this.snake.getSegments(), velocity.x, velocity.y);
       if (success) {
         log("Shot fired!");
@@ -431,7 +481,7 @@ export class Game {
   
   increaseSpeed() {
     const velocity = this.snake.getVelocity();
-    if (velocity.x !== 0 || velocity.y !== 0 || this.gameOver) {
+    if ((velocity.x !== 0 || velocity.y !== 0) || this.gameOver) {
       this.currentSpeedIndex = (this.currentSpeedIndex + 1) % SPEEDS.length;
       updateSpeed(SPEEDS, this.currentSpeedIndex);
       updateStatus(`Speed: ${SPEEDS[this.currentSpeedIndex].name}`);
@@ -440,7 +490,7 @@ export class Game {
   
   decreaseSpeed() {
     const velocity = this.snake.getVelocity();
-    if (velocity.x !== 0 || velocity.y !== 0 || this.gameOver) {
+    if ((velocity.x !== 0 || velocity.y !== 0) || this.gameOver) {
       this.currentSpeedIndex = (this.currentSpeedIndex - 1 + SPEEDS.length) % SPEEDS.length;
       updateSpeed(SPEEDS, this.currentSpeedIndex);
       updateStatus(`Speed: ${SPEEDS[this.currentSpeedIndex].name}`);
@@ -492,4 +542,3 @@ window.onload = function() {
   gameInstance = new Game();
   displayHighScores();
 };
-

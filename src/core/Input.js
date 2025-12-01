@@ -25,6 +25,13 @@ export class InputManager {
       if (e.code === 'Space') {
         e.preventDefault();
         
+        // Restart game if ended or not started (Task 7)
+        if ((this.game.gameOver || !this.game.gameStarted) && !this.game.settings.isOpen) {
+             // Use the global start function to ensure singleton pattern consistency
+             window.startGame();
+             return;
+        }
+
         if (e.shiftKey) {
           this.game.decreaseSpeed();
         } else {

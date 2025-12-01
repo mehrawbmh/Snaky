@@ -14,11 +14,14 @@ export class Settings {
     this.showScoreboard = true;
     this.showLogging = true;
     this.enableFoodEffects = true; // NEW: Enable food visual effects
+    this.isOpen = false;
   }
   
   openSettings() {
     const modal = document.getElementById('settingsModal');
     if (!modal) return;
+    
+    this.isOpen = true;
     
     document.getElementById('playerNameInput').value = this.playerName;
     document.getElementById('snakeColorInput').value = this.snakeColor;
@@ -43,6 +46,7 @@ export class Settings {
     if (modal) {
       modal.style.display = 'none';
     }
+    this.isOpen = false;
   }
   
   applySettings() {

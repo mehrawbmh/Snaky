@@ -63,37 +63,54 @@ export class ObstacleManager {
   
   draw(ctx, gridSize) {
     for (let obstacle of this.obstacles) {
+      const x = obstacle.x * gridSize;
+      const y = obstacle.y * gridSize;
+      
+      // Main block
       ctx.fillStyle = obstacle.color;
-      ctx.fillRect(
-        obstacle.x * gridSize + 1,
-        obstacle.y * gridSize + 1,
-        gridSize - 2,
-        gridSize - 2
-      );
+      ctx.fillRect(x + 1, y + 1, gridSize - 2, gridSize - 2);
       
-      ctx.fillStyle = lightenColor(obstacle.color, 0.3);
-      ctx.fillRect(
-        obstacle.x * gridSize + 2,
-        obstacle.y * gridSize + 2,
-        gridSize - 6,
-        gridSize - 6
-      );
-      
-      ctx.strokeStyle = darkenColor(obstacle.color, 0.3);
-      ctx.lineWidth = 1;
+      // 3D Bevel effect
+      ctx.fillStyle = lightenColor(obstacle.color, 0.2);
       ctx.beginPath();
-      ctx.moveTo(obstacle.x * gridSize + 5, obstacle.y * gridSize + 5);
-      ctx.lineTo(obstacle.x * gridSize + 10, obstacle.y * gridSize + 8);
-      ctx.lineTo(obstacle.x * gridSize + 12, obstacle.y * gridSize + 12);
+      ctx.moveTo(x + 1, y + 1);
+      ctx.lineTo(x + gridSize - 1, y + 1);
+      ctx.lineTo(x + gridSize - 5, y + 5);
+      ctx.lineTo(x + 5, y + 5);
+      ctx.fill();
+      
+      ctx.fillStyle = darkenColor(obstacle.color, 0.2);
+      ctx.beginPath();
+      ctx.moveTo(x + gridSize - 1, y + 1);
+      ctx.lineTo(x + gridSize - 1, y + gridSize - 1);
+      ctx.lineTo(x + gridSize - 5, y + gridSize - 5);
+      ctx.lineTo(x + gridSize - 5, y + 5);
+      ctx.fill();
+
+      // Crate cross pattern
+      ctx.strokeStyle = darkenColor(obstacle.color, 0.4);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x + 5, y + 5);
+      ctx.lineTo(x + gridSize - 5, y + gridSize - 5);
+      ctx.moveTo(x + gridSize - 5, y + 5);
+      ctx.lineTo(x + 5, y + gridSize - 5);
       ctx.stroke();
       
+      // Border
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 1, y + 1, gridSize - 2, gridSize - 2);
+
       if (obstacle.health > 1) {
         ctx.fillStyle = 'white';
-        ctx.font = '12px Arial';
+        ctx.font = 'bold 14px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(obstacle.health,
-          obstacle.x * gridSize + gridSize/2,
-          obstacle.y * gridSize + gridSize/2 + 4);
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'black';
+        ctx.shadowBlur = 2;
+        ctx.fillText(obstacle.health, x + gridSize/2, y + gridSize/2);
+        ctx.shadowBlur = 0;
       }
     }
   }

@@ -1,6 +1,6 @@
 # 🐍 Snaky - The Ultimate Snake Game Experience
 
-![Snaky Gameplay](game-screenshot.png)
+![Snaky Gameplay](assets/game-screenshot.png)
 
 Welcome to **Snaky**, a modern, high-octane twist on the classic snake game! Dive into a neon-lit world where survival isn't just about eating—it's about strategy, shooting, and style.
 

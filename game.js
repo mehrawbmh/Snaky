@@ -1574,10 +1574,67 @@ document.getElementById('obstacleColorMode').addEventListener('change', function
   updateObstacleColorPicker();
 });
 
+// Mobile Controls Event Listeners
+function setupMobileControls() {
+  const btnUp = document.getElementById('btn-up');
+  const btnDown = document.getElementById('btn-down');
+  const btnLeft = document.getElementById('btn-left');
+  const btnRight = document.getElementById('btn-right');
+  const btnCenter = document.getElementById('btn-center');
+  
+  if (btnUp) {
+    btnUp.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (velocityY !== 1) {
+        velocityX = 0;
+        velocityY = -1;
+      }
+    });
+  }
+  
+  if (btnDown) {
+    btnDown.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (velocityY !== -1) {
+        velocityX = 0;
+        velocityY = 1;
+      }
+    });
+  }
+  
+  if (btnLeft) {
+    btnLeft.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (velocityX !== 1) {
+        velocityX = -1;
+        velocityY = 0;
+      }
+    });
+  }
+  
+  if (btnRight) {
+    btnRight.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (velocityX !== -1) {
+        velocityX = 1;
+        velocityY = 0;
+      }
+    });
+  }
+  
+  if (btnCenter) {
+    btnCenter.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      shootBullet();
+    });
+  }
+}
+
 // Initialize the game when page loads
 window.onload = function() {
   displayHighScores();
+  setupMobileControls();
   
   // Show settings modal on first load
-  // openSettings();
+  openSettings();
 };

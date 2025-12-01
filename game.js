@@ -1,8 +1,36 @@
 // Canvas setup
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const gridSize = 20;
-const tileCount = 20;
+let gridSize = 20;
+let tileCount = 20;
+
+// Function to resize canvas to fit screen
+function resizeCanvas() {
+  const wrapper = document.querySelector('.canvas-wrapper');
+  const maxWidth = wrapper.clientWidth - 40;
+  const maxHeight = wrapper.clientHeight - 40;
+  
+  // Calculate the best size that maintains square tiles
+  const minDimension = Math.min(maxWidth, maxHeight);
+  
+  // Make sure it's divisible by tileCount for perfect squares
+  const canvasSize = Math.floor(minDimension / tileCount) * tileCount;
+  
+  canvas.width = canvasSize;
+  canvas.height = canvasSize;
+  gridSize = canvasSize / tileCount;
+}
+
+// Initialize canvas size
+resizeCanvas();
+
+// Resize canvas when window resizes
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  if (gameRunning) {
+    draw(); // Redraw after resize
+  }
+});
 
 // Game variables
 let snake = [];
@@ -59,7 +87,7 @@ let bulletColor = '#ffff00';
 let bulletSize = 3;
 let bulletSpeed = 1;
 let showScoreboard = true;
-let showLogging = false;
+let showLogging = true; // Enable logging by default
 
 // Particle system for fire effect
 const particles = [];
@@ -194,12 +222,12 @@ function applySettings() {
   }
   
   // Update logging visibility
-  const logDisplay = document.getElementById('logDisplay');
-  if (logDisplay) {
+  const logContainer = document.getElementById('logContainer');
+  if (logContainer) {
     if (showLogging) {
-      logDisplay.classList.remove('hidden');
+      logContainer.classList.remove('hidden');
     } else {
-      logDisplay.classList.add('hidden');
+      logContainer.classList.add('hidden');
     }
   }
   
@@ -244,14 +272,34 @@ function updateObstacleColorPicker() {
   }
 }
 
-// Logging function
+// Logging function - creates stacked notifications
 function log(message) {
   if (!showLogging) return;
   
-  logMessage = message;
-  const logDisplay = document.getElementById('logDisplay');
-  if (logDisplay) {
-    logDisplay.textContent = message;
+  const logContainer = document.getElementById('logContainer');
+  if (!logContainer) return;
+  
+  // Create new log message element
+  const logDiv = document.createElement('div');
+  logDiv.className = 'log-message';
+  logDiv.textContent = message;
+  
+  // Add to container
+  logContainer.appendChild(logDiv);
+  
+  // Remove after 10 seconds
+  setTimeout(() => {
+    logDiv.classList.add('fade-out');
+    setTimeout(() => {
+      if (logDiv.parentNode === logContainer) {
+        logContainer.removeChild(logDiv);
+      }
+    }, 500); // Wait for fade out animation
+  }, 10000); // 10 seconds
+  
+  // Keep only last 5 messages
+  while (logContainer.children.length > 5) {
+    logContainer.removeChild(logContainer.firstChild);
   }
 }
 
@@ -1531,5 +1579,5 @@ window.onload = function() {
   displayHighScores();
   
   // Show settings modal on first load
-  openSettings();
+  // openSettings();
 };

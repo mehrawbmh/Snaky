@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Snake Game</title>
+  <title>Snaky - The Ultimate Snake Game</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Log Display -->
-  <div id="logDisplay" class="log-display hidden"></div>
+  <!-- Log Display Container (for stacked notifications) -->
+  <div id="logContainer" class="log-container"></div>
   
   <div class="game-container">
     <!-- Header with Score, Speed, and Settings Button -->
@@ -17,13 +18,14 @@
         <div class="score">Score: <span id="score">0</span></div>
         <div class="speed">Speed: <span id="speed">1x</span></div>
       </div>
+      <div class="game-name">SNAKY</div>
       <button class="settings-btn" onclick="openSettings()">⚙️ Settings</button>
     </div>
     
     <div class="status" id="status">Ready</div>
     
     <div class="canvas-wrapper">
-      <canvas id="gameCanvas" width="400" height="400"></canvas>
+      <canvas id="gameCanvas"></canvas>
       <div class="play-button-overlay" id="playButton" onclick="startGame()"></div>
     </div>
     
@@ -113,7 +115,7 @@
       <!-- Toggle Logging -->
       <div class="setting-group">
         <div class="checkbox-row">
-          <input type="checkbox" id="showLoggingToggle">
+          <input type="checkbox" id="showLoggingToggle" checked>
           <label for="showLoggingToggle">Enable Logging</label>
         </div>
       </div>

@@ -6,7 +6,7 @@ export class FoodManager {
     this.currentFood = null;
   }
   
-  generate(snake, obstacles, bullets, tileCount) {
+  generate(snake, obstacles, bullets, tileCount, wallsEnabled) {
     let validPosition = false;
     let newFood;
     
@@ -24,9 +24,27 @@ export class FoodManager {
     }
     
     while (!validPosition) {
+      // If walls are enabled, range is 0 to tileCount-1 (no offset needed as walls are drawn AT coordinates <0 or >=tileCount? No.)
+      // Wait, walls are drawn AT 0,0 to width,height overlaying the grid?
+      // Game.js draw logic: 
+      // Top: rect(0, 0, width, gridSize) -> This covers row 0.
+      // Bottom: rect(0, height-gridSize, width, gridSize) -> This covers last row.
+      // Left: rect(0, 0, gridSize, height) -> This covers col 0.
+      // Right: rect(width-gridSize, 0, gridSize, height) -> This covers last col.
+      
+      // So if walls are enabled, the playable area is from 1 to tileCount-2.
+      
+      let min = 0;
+      let max = tileCount;
+      
+      if (wallsEnabled) {
+          min = 1;
+          max = tileCount - 1;
+      }
+
       newFood = {
-        x: Math.floor(Math.random() * tileCount),
-        y: Math.floor(Math.random() * tileCount),
+        x: Math.floor(Math.random() * (max - min)) + min,
+        y: Math.floor(Math.random() * (max - min)) + min,
         type: selectedType.type,
         points: selectedType.points,
         name: selectedType.name,

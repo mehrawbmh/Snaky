@@ -23,6 +23,8 @@ export function updateSpeed(speeds, currentSpeedIndex) {
 
 export function updateStatus(message) {
   const statusElement = document.getElementById('status');
+  // We should not toggle hidden here, as it might override the settings
+  // Just update text if it exists and is not explicitly hidden by settings logic elsewhere
   if (statusElement) {
     statusElement.textContent = message;
   }

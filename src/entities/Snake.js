@@ -53,8 +53,15 @@ export class Snake {
         if (headX >= tileCount) headX = 0;
         if (headY >= tileCount) headY = 0;
     } 
-    // If wallsEnabled, we let coordinates go out of bounds. 
-    // The Game loop will check collision.
+    // Check wall collision (Task 3: Head Edge Collision)
+    // If walls are active, we should detect collision slightly earlier or differently
+    // The game loop checks if x < 0 or x >= tileCount etc.
+    // If we want "corner of head" collision, we need to be more precise than grid integers?
+    // But our logic is grid based.
+    // If walls enabled, the walls are at x=0, y=0, x=tileCount-1, y=tileCount-1
+    // So safe area is 1 to tileCount-2.
+    // Game.js checks: if (newHead.x < 0 ... ) -> this means it walked INTO the wall
+    // If wall is drawn AT 0, then walking to 0 is a collision.
     
     return { x: headX, y: headY };
   }

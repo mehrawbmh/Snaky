@@ -16,7 +16,7 @@ export class ObstacleManager {
     }
   }
   
-  generate(count, snake, tileCount) {
+  generate(count, snake, tileCount, wallsEnabled) {
     this.obstacles = [];
     
     for (let i = 0; i < count; i++) {
@@ -31,9 +31,18 @@ export class ObstacleManager {
           color = this.singleObstacleColor;
         }
         
+        // Playable area check
+        let min = 0;
+        let max = tileCount;
+        
+        if (wallsEnabled) {
+            min = 1;
+            max = tileCount - 1;
+        }
+
         obstacle = {
-          x: Math.floor(Math.random() * tileCount),
-          y: Math.floor(Math.random() * tileCount),
+          x: Math.floor(Math.random() * (max - min)) + min,
+          y: Math.floor(Math.random() * (max - min)) + min,
           color: color,
           health: 1
         };

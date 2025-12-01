@@ -133,14 +133,20 @@ export class Game {
     }
 
     // Generate obstacles
-    this.obstacleManager.generate(OBSTACLE_NUMBERS, this.snake.getSegments(), this.canvasManager.getTileCount());
+    this.obstacleManager.generate(
+        OBSTACLE_NUMBERS, 
+        this.snake.getSegments(), 
+        this.canvasManager.getTileCount(), 
+        currentSettings.enableWalls
+    );
     
     // Generate food
     this.foodManager.generate(
       this.snake.getSegments(),
       this.obstacleManager.getObstacles(),
       this.bulletManager.getBullets(),
-      this.canvasManager.getTileCount()
+      this.canvasManager.getTileCount(),
+      currentSettings.enableWalls
     );
     
     // Update displays
@@ -208,11 +214,13 @@ export class Game {
     if (this.foodManager.isExpired()) {
       log('Food disappeared! New food spawned.');
       updateStatus('Food disappeared!');
+      const currentSettings = this.settings.getAllSettings(); // Need settings for wall info
       this.foodManager.generate(
         this.snake.getSegments(),
         this.obstacleManager.getObstacles(),
         this.bulletManager.getBullets(),
-        this.canvasManager.getTileCount()
+        this.canvasManager.getTileCount(),
+        currentSettings.enableWalls
       );
     }
     
@@ -289,7 +297,7 @@ export class Game {
       }
       
       // Move snake
-      const currentSettings = this.settings.getAllSettings();
+      // const currentSettings = this.settings.getAllSettings(); // Remove redeclaration
       const newHead = this.snake.move(moveX, moveY, this.canvasManager.getTileCount(), currentSettings.enableWalls);
       
       // Check wall collision (if walls enabled, newHead might be out of bounds)
@@ -297,7 +305,16 @@ export class Game {
       // Snake.move logic: if walls enabled, it returns out-of-bounds coordinate.
       if (currentSettings.enableWalls) {
           const tileCount = this.canvasManager.getTileCount();
-          if (newHead.x < 0 || newHead.y < 0 || newHead.x >= tileCount || newHead.y >= tileCount) {
+          // Walls are drawn at index 0 and index tileCount-1 (if we view them as 1-tile thick borders inside the canvas)
+          // BUT, the grid usually starts at 0.
+          // If I draw a wall at `rect(0,0,width,gridSize)`, that covers row 0.
+          // So row 0 is deadly.
+          // If I draw a wall at `rect(0,height-gridSize,width,gridSize)`, that covers row tileCount-1.
+          // So row tileCount-1 is deadly.
+          // Same for cols 0 and tileCount-1.
+          
+          // Therefore, safe range is 1 to tileCount-2.
+          if (newHead.x <= 0 || newHead.y <= 0 || newHead.x >= tileCount - 1 || newHead.y >= tileCount - 1) {
               this.triggerGameOverSequence();
               return;
           }
@@ -349,7 +366,7 @@ export class Game {
       );
       
       // Generate trail particles
-      const currentSettings = this.settings.getAllSettings();
+      // const currentSettings = this.settings.getAllSettings(); // Remove redeclaration
       this.particleManager.generateTrailParticles(
         this.snake.getSegments(),
         this.canvasManager.getGridSize(),
@@ -410,11 +427,13 @@ export class Game {
     }
     
     // Generate new food
+    const currentSettings = this.settings.getAllSettings();
     this.foodManager.generate(
       this.snake.getSegments(),
       this.obstacleManager.getObstacles(),
       this.bulletManager.getBullets(),
-      this.canvasManager.getTileCount()
+      this.canvasManager.getTileCount(),
+      currentSettings.enableWalls
     );
   }
   

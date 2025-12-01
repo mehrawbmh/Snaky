@@ -1,0 +1,25 @@
+{
+  "name": "snaky",
+  "version": "1.0.0",
+  "description": "A feature-rich, responsive snake game built with vanilla JavaScript using ES6 modules and best practices.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mehrawbmh/Snaky.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mehrawbmh/Snaky/issues"
+  },
+  "homepage": "https://github.com/mehrawbmh/Snaky#readme",
+  "devDependencies": {
+    "vite": "^7.2.6"
+  }
+}

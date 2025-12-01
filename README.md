@@ -1,213 +1,57 @@
-# Snaky - A Modern Snake Game
+# 🐍 Snaky - The Ultimate Snake Game Experience
 
-A feature-rich, responsive snake game built with vanilla JavaScript using ES6 modules and best practices.
+![Snaky Gameplay](game-screenshot.png)
 
-## 🎮 Features
+Welcome to **Snaky**, a modern, high-octane twist on the classic snake game! Dive into a neon-lit world where survival isn't just about eating—it's about strategy, shooting, and style.
 
-- **Multiple Food Types**: Apple, Grapes, Orange, Beer (drunk effect), and Toxic food
-- **Obstacle System**: Destroyable obstacles with bullet shooting mechanics
-- **Visual Effects**: Particle systems, explosions, and animated trails
-- **Customizable Settings**: Snake colors, templates (Classic, Rainbow, Fire, Ocean, Neon, Metal)
-- **Speed Control**: Adjustable game speed (1x to 10x)
-- **High Score System**: Local storage-based scoreboard
-- **Mobile Support**: Touch-friendly virtual joystick controls
-- **Responsive Design**: Full-screen gameplay on all devices
+## 🚀 Why Play Snaky?
 
-## 📁 Project Structure
+Get ready for features that take the classic gameplay to the next level:
 
-```
-Snaky/
-├── main.html           # Main HTML entry point
-├── styles.css          # All game styles
-├── favicon.svg         # Game icon
-├── js/                 # Modular JavaScript files
-│   ├── game.js         # Main game controller
-│   ├── config.js       # Game configuration and constants
-│   ├── canvas.js       # Canvas management and rendering
-│   ├── snake.js        # Snake logic and drawing
-│   ├── food.js         # Food types, generation, and effects
-│   ├── obstacles.js    # Obstacle management
-│   ├── bullets.js      # Bullet shooting mechanics
-│   ├── particles.js    # Particle effects (fire, explosions)
-│   ├── ui.js           # UI updates (score, status, logs)
-│   ├── storage.js      # High score storage
-│   ├── settings.js     # Settings modal management
-│   ├── input.js        # Keyboard and mobile input handling
-│   └── utils.js        # Utility functions (color manipulation)
-└── README.md           # This file
-```
+*   **🍓 Deliciously Dangerous Food**: Not just apples! Hunt for Grapes, Oranges, and even **Beer** (watch out for the drunk effect!)—but avoid the Toxic waste!
+*   **🔫 Shoot Your Way Through**: Trapped? Blast destructible obstacles with your built-in shooter!
+*   **✨ Stunning Visuals**: Enjoy particle explosions, animated trails, and vibrant themes like **Neon**, **Fire**, and **Metal**.
+*   **📱 Play Anywhere**: Fully responsive design with virtual joystick controls for mobile gaming.
+*   **🎨 Total Customization**: Choose your snake's skin, color, and speed. Make it yours!
+*   **🏆 Climb the Ranks**: Compete for the top spot on the local high-score board.
 
-## 🏗️ Architecture
+## 🎮 Getting Started
 
-### Module Responsibilities
+Run the game locally in seconds with modern web tools!
 
-#### **game.js** (Main Controller)
-- Coordinates all game modules
-- Manages game loop and state
-- Handles game initialization and ending
-- Provides global functions for HTML interaction
+### Prerequisites
+- Node.js (v18+ recommended)
+- npm
 
-#### **config.js** (Configuration)
-- Game constants (grid size, timers, limits)
-- Speed configurations
-- Food types and probabilities
-- Color palettes
-- Template definitions
+### Installation
 
-#### **canvas.js** (Canvas Management)
-- Canvas initialization and resizing
-- Responsive canvas sizing
-- Grid calculations
-- Drawing context management
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/mehrawbmh/Snaky.git
+    cd Snaky
+    ```
 
-#### **snake.js** (Snake Logic)
-- Snake movement and collision
-- Head and segment drawing
-- Direction control
-- Visual templates (Classic, Rainbow, Fire, etc.)
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-#### **food.js** (Food System)
-- Random food generation
-- Food type selection based on probability
-- Food drawing (Apple, Grapes, Orange, Beer, Toxic)
-- Food expiration timer
-- Visual timer display
+3.  **Start the game**:
+    ```bash
+    npm run dev
+    ```
 
-#### **obstacles.js** (Obstacles)
-- Obstacle generation
-- Collision detection
-- Health management
-- Visual rendering with textures
+    Open the link provided in the terminal (usually `http://localhost:5173`) and start slithering!
 
-#### **bullets.js** (Shooting Mechanics)
-- Bullet shooting and movement
-- Bullet-obstacle collision
-- Bullet wrapping around screen
-- Bullet aging and removal
+## 🕹️ Controls
 
-#### **particles.js** (Visual Effects)
-- Fire trail particles
-- Explosion effects
-- Particle lifecycle management
-- Performance optimization (particle limits)
-
-#### **ui.js** (User Interface)
-- Score updates
-- Speed display
-- Status messages
-- Stacked log notifications
-- Game over screen
-
-#### **storage.js** (Data Persistence)
-- High score saving (localStorage)
-- Score loading and sorting
-- Scoreboard display
-
-#### **settings.js** (Settings Management)
-- Settings modal control
-- Setting persistence
-- Visual customization options
-- Toggle features (scoreboard, logging)
-
-#### **input.js** (Input Handling)
-- Keyboard controls (Arrow keys, WASD)
-- Mobile touch controls
-- Input validation
-- Speed controls (Space/Shift+Space)
-
-#### **utils.js** (Utilities)
-- Color manipulation (darken, lighten)
-- Hex to HSL conversion
-- Input element detection
-
-## 🎯 Key Design Patterns
-
-### ES6 Modules
-All modules use ES6 import/export syntax for clean dependency management.
-
-### Class-Based Architecture
-Most modules are implemented as classes for encapsulation and state management.
-
-### Separation of Concerns
-Each module has a single, well-defined responsibility.
-
-### Dependency Injection
-Game controller passes necessary dependencies to each module.
-
-### Event-Driven
-Input handling is decoupled from game logic through event listeners.
-
-## 🚀 Getting Started
-
-1. Open `main.html` in a modern web browser
-2. Configure your settings (player name, colors, templates)
-3. Click "Apply Settings"
-4. Press "PLAY" to start
-5. Use arrow keys or WASD to move
-6. Press Enter or tap center button to shoot
-7. Press Space to increase speed, Shift+Space to decrease
-
-## 🎮 Controls
-
-### Desktop
-- **Arrow Keys / WASD**: Move snake
-- **Enter**: Shoot bullet
-- **Space**: Increase speed
-- **Shift + Space**: Decrease speed
-
-### Mobile
-- **D-Pad**: Move snake
-- **Center Button (🔫)**: Shoot bullet
-
-## 🎨 Customization
-
-All game settings can be customized through the settings modal:
-- Player name
-- Snake color
-- Visual template
-- Obstacle colors
-- Bullet properties
-- Toggle scoreboard and logs
-
-## 🏆 Scoring
-
-- **Apple**: 1 point
-- **Grapes**: 2 points
-- **Orange**: 3 points
-- **Beer**: 5 points (+ drunk effect)
-- **Toxic**: Instant game over
-- **Destroyed Obstacle**: 5 points
-
-## 📱 Mobile Responsiveness
-
-- Full-screen gameplay
-- Virtual joystick for touch devices
-- Hidden status bar and scoreboard on mobile
-- Optimized UI for small screens
-
-## 🛠️ Technical Stack
-
-- **Vanilla JavaScript (ES6+)**: No frameworks required
-- **HTML5 Canvas**: For rendering
-- **CSS3**: Modern styling with animations
-- **LocalStorage API**: For high score persistence
-- **ES6 Modules**: Modular architecture
-- **RequestAnimationFrame**: Smooth game loop
-
-## 📝 Future Enhancements
-
-- Multiplayer mode
-- Power-ups and special abilities
-- Level system with increasing difficulty
-- Sound effects and background music
-- Additional snake templates
-- Custom map editor
-
-## 📄 License
-
-This project is open source and available for educational purposes.
+| Action | Desktop (Keyboard) | Mobile |
+| :--- | :--- | :--- |
+| **Move** | Arrow Keys / WASD | Virtual D-Pad |
+| **Shoot** | Enter | Center Button (🔫) |
+| **Speed Up** | Space | - |
+| **Slow Down** | Shift + Space | - |
 
 ---
 
-Enjoy playing Snaky! 🐍✨
-
+**Ready to slither? [Play Now!](#)** 🐍✨

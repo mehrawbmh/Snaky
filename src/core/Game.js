@@ -427,7 +427,6 @@ export class Game {
     }
     
     // Generate new food
-    const currentSettings = this.settings.getAllSettings();
     this.foodManager.generate(
       this.snake.getSegments(),
       this.obstacleManager.getObstacles(),

@@ -433,7 +433,7 @@ export class Game {
   triggerGameOverSequence() {
       this.isDying = true;
       this.gameRunning = false; // Stop logic updates
-      this.dyingStartTime = Date.now();
+      this.dyingStartTime = performance.now();
       
       // Visual feedback
       log('💥 CRASH! Game Over sequence initiated...');

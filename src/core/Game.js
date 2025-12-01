@@ -1,15 +1,16 @@
 // Main Game Module
-import { CONFIG, SPEEDS, FOOD_EFFECT_DELAY, FOOD_EFFECT_DURATION, OBSTACLE_NUMBERS } from './config.js';
-import { CanvasManager } from './canvas.js';
-import { Snake } from './snake.js';
-import { FoodManager } from './food.js';
-import { ObstacleManager } from './obstacles.js';
-import { BulletManager } from './bullets.js';
-import { ParticleManager } from './particles.js';
-import { Settings } from './settings.js';
-import { InputManager } from './input.js';
-import { updateScore, updateSpeed, updateStatus, log, hidePlayButton, showPlayButton, showGameOver } from './ui.js';
-import { saveScore, displayHighScores } from './storage.js';
+import { CONFIG, SPEEDS, FOOD_EFFECT_DELAY, FOOD_EFFECT_DURATION, OBSTACLE_NUMBERS } from '../config/Config.js';
+import { CanvasManager } from './Canvas.js';
+import { Snake } from '../entities/Snake.js';
+import { FoodManager } from '../entities/Food.js';
+import { ObstacleManager } from '../entities/Obstacles.js';
+import { BulletManager } from '../entities/Bullets.js';
+import { ParticleManager } from '../entities/Particles.js';
+import { Settings } from '../ui/Settings.js';
+import { InputManager } from './Input.js';
+import { updateScore, updateSpeed, updateStatus, log, hidePlayButton, showPlayButton, showGameOver } from '../ui/UI.js';
+import { saveScore, displayHighScores } from './Storage.js';
+import '../styles/main.css';
 
 export class Game {
   constructor() {

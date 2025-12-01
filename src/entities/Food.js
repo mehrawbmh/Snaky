@@ -1,5 +1,5 @@
 // Food Management
-import { CONFIG, FOOD_TYPES } from './config.js';
+import { CONFIG, FOOD_TYPES } from '../config/Config.js';
 
 export class FoodManager {
   constructor() {

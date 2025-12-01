@@ -1,6 +1,6 @@
 // Snake Management
-import { TEMPLATES } from './config.js';
-import { darkenColor, lightenColor, getHueFromColor } from './utils.js';
+import { TEMPLATES } from '../config/Config.js';
+import { darkenColor, lightenColor, getHueFromColor } from '../utils/Utils.js';
 
 export class Snake {
   constructor() {

@@ -1,5 +1,5 @@
 // Particle Effects Management
-import { CONFIG, TEMPLATES } from './config.js';
+import { CONFIG, TEMPLATES } from '../config/Config.js';
 
 export class ParticleManager {
   constructor() {

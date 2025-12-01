@@ -1,5 +1,5 @@
 // UI Management
-import { CONFIG } from './config.js';
+import { CONFIG } from '../config/Config.js';
 
 let showLogging = true;
 

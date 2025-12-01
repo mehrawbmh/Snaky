@@ -1,5 +1,5 @@
 // Canvas Management
-import { CONFIG } from './config.js';
+import { CONFIG } from '../config/Config.js';
 
 export class CanvasManager {
   constructor(canvasId) {

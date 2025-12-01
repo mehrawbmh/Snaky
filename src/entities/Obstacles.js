@@ -1,6 +1,6 @@
 // Obstacle Management
-import { OBSTACLE_COLOR_PALETTE } from './config.js';
-import { lightenColor, darkenColor } from './utils.js';
+import { OBSTACLE_COLOR_PALETTE } from '../config/Config.js';
+import { lightenColor, darkenColor } from '../utils/Utils.js';
 
 export class ObstacleManager {
   constructor() {

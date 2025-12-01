@@ -1,5 +1,5 @@
 // Settings Management
-import { setLoggingEnabled } from './ui.js';
+import { setLoggingEnabled } from './UI.js';
 
 export class Settings {
   constructor() {

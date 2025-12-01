@@ -1,5 +1,5 @@
 // Input Handling (Keyboard and Mobile Controls)
-import { isInputElement } from './utils.js';
+import { isInputElement } from '../utils/Utils.js';
 
 export class InputManager {
   constructor(game) {

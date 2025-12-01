@@ -21,11 +21,15 @@ export const SPEEDS = [
 ];
 
 export const FOOD_TYPES = [
-  { type: 'apple', name: 'Apple', points: 1, probability: 30 },
-  { type: 'grapes', name: 'Grapes', points: 2, probability: 25 },
-  { type: 'orange', name: 'Orange', points: 3, probability: 20 },
-  { type: 'beer', name: 'Beer', points: 5, probability: 20 },
-  { type: 'toxic', name: 'Toxic', points: 0, probability: 5 }
+  { type: 'apple', name: 'Apple', points: 1, probability: 18, emoji: '🍎' },
+  { type: 'grapes', name: 'Grapes', points: 2, probability: 15, emoji: '🍇' },
+  { type: 'orange', name: 'Orange', points: 2, probability: 15, emoji: '🍊' },
+  { type: 'watermelon', name: 'Watermelon', points: 3, probability: 12, emoji: '🍉' },
+  { type: 'strawberry', name: 'Strawberry', points: 2, probability: 12, emoji: '🍓' },
+  { type: 'banana', name: 'Banana', points: 2, probability: 10, emoji: '🍌' },
+  { type: 'cherry', name: 'Cherry', points: 3, probability: 8, emoji: '🍒' },
+  { type: 'beer', name: 'Beer', points: 5, probability: 7, emoji: '🍺' },
+  { type: 'toxic', name: 'Toxic', points: 0, probability: 3, emoji: '☠️' }
 ];
 
 export const OBSTACLE_COLOR_PALETTE = [

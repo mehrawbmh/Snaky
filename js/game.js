@@ -264,45 +264,31 @@ export class Game {
   }
   
   handleFoodEaten(food) {
-    switch(food.type) {
-      case 'apple':
-        this.score += food.points;
-        updateScore(this.score);
-        log(`Apple eaten! +${food.points} point`);
-        updateStatus(`Apple eaten! +${food.points}`);
-        break;
-        
-      case 'grapes':
-        this.score += food.points;
-        updateScore(this.score);
-        log(`Grapes eaten! +${food.points} points`);
-        updateStatus(`Grapes eaten! +${food.points}`);
-        break;
-        
-      case 'orange':
-        this.score += food.points;
-        updateScore(this.score);
-        log(`Orange eaten! +${food.points} points`);
-        updateStatus(`Orange eaten! +${food.points}`);
-        break;
-        
-      case 'beer':
-        this.score += food.points;
-        updateScore(this.score);
-        this.drunkStartTime = Date.now();
-        this.drunkEndTime = Date.now() + CONFIG.DRUNK_DELAY + CONFIG.DRUNK_DURATION;
-        this.drunkMoveCounter = 0;
-        log(`Beer consumed! Drunk effect in 1 second... +${food.points} points`);
-        updateStatus('🍺 Beer consumed! Drunk effect starting soon...');
-        break;
-        
-      case 'toxic':
-        log('Toxic food eaten! GAME OVER!');
-        updateStatus('☠️ Toxic! You died!');
-        this.endGame();
-        return;
+    // Handle special foods
+    if (food.type === 'toxic') {
+      log('☠️ Toxic food eaten! GAME OVER!');
+      updateStatus('☠️ Toxic! You died!');
+      this.endGame();
+      return;
     }
     
+    if (food.type === 'beer') {
+      this.score += food.points;
+      updateScore(this.score);
+      this.drunkStartTime = Date.now();
+      this.drunkEndTime = Date.now() + CONFIG.DRUNK_DELAY + CONFIG.DRUNK_DURATION;
+      this.drunkMoveCounter = 0;
+      log(`🍺 Beer consumed! Drunk effect in 1 second... +${food.points} points`);
+      updateStatus('🍺 Beer consumed! Drunk effect starting soon...');
+    } else {
+      // Normal food
+      this.score += food.points;
+      updateScore(this.score);
+      log(`${food.emoji} ${food.name} eaten! +${food.points} point${food.points > 1 ? 's' : ''}`);
+      updateStatus(`${food.emoji} ${food.name} +${food.points}`);
+    }
+    
+    // Generate new food
     this.foodManager.generate(
       this.snake.getSegments(),
       this.obstacleManager.getObstacles(),

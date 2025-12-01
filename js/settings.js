@@ -13,6 +13,7 @@ export class Settings {
     this.bulletSpeed = 1;
     this.showScoreboard = true;
     this.showLogging = true;
+    this.enableFoodEffects = true; // NEW: Enable food visual effects
   }
   
   openSettings() {
@@ -31,6 +32,7 @@ export class Settings {
     document.getElementById('bulletSpeedInput').value = this.bulletSpeed;
     document.getElementById('showScoreboardToggle').checked = this.showScoreboard;
     document.getElementById('showLoggingToggle').checked = this.showLogging;
+    document.getElementById('enableFoodEffectsToggle').checked = this.enableFoodEffects;
     
     this.updateObstacleColorPicker();
     modal.style.display = 'flex';
@@ -58,6 +60,7 @@ export class Settings {
     this.bulletSpeed = parseInt(document.getElementById('bulletSpeedInput').value);
     this.showScoreboard = document.getElementById('showScoreboardToggle').checked;
     this.showLogging = document.getElementById('showLoggingToggle').checked;
+    this.enableFoodEffects = document.getElementById('enableFoodEffectsToggle').checked;
     
     const scoreboard = document.getElementById('scoreboard');
     if (scoreboard) {
@@ -94,7 +97,8 @@ export class Settings {
       bulletSize: this.bulletSize,
       bulletSpeed: this.bulletSpeed,
       showScoreboard: this.showScoreboard,
-      showLogging: this.showLogging
+      showLogging: this.showLogging,
+      enableFoodEffects: this.enableFoodEffects
     };
   }
 }

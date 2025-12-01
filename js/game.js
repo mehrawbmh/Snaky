@@ -1,5 +1,5 @@
 // Main Game Module
-import { CONFIG, SPEEDS } from './config.js';
+import { CONFIG, SPEEDS, FOOD_EFFECT_DELAY, FOOD_EFFECT_DURATION } from './config.js';
 import { CanvasManager } from './canvas.js';
 import { Snake } from './snake.js';
 import { FoodManager } from './food.js';
@@ -35,6 +35,17 @@ export class Game {
     this.drunkStartTime = 0;
     this.drunkEndTime = 0;
     this.drunkMoveCounter = 0;
+    
+    // Food effect state
+    this.foodEffectActive = false;
+    this.foodEffectStartTime = 0;
+    this.foodEffectEndTime = 0;
+    this.foodEffectColor = null;
+    this.foodEffectTemplate = null;
+    this.pendingEffectColor = null; // New effect waiting to activate
+    this.pendingEffectTemplate = null;
+    this.originalSnakeColor = null;
+    this.originalTemplate = null;
     
     this.setupEventListeners();
     this.setupCanvasResize();
@@ -86,6 +97,17 @@ export class Game {
     this.drunkStartTime = 0;
     this.drunkEndTime = 0;
     this.drunkMoveCounter = 0;
+    
+    // Reset food effects
+    this.foodEffectActive = false;
+    this.foodEffectStartTime = 0;
+    this.foodEffectEndTime = 0;
+    this.foodEffectColor = null;
+    this.foodEffectTemplate = null;
+    this.pendingEffectColor = null;
+    this.pendingEffectTemplate = null;
+    this.originalSnakeColor = null;
+    this.originalTemplate = null;
     
     // Get current settings
     const currentSettings = this.settings.getAllSettings();
@@ -154,6 +176,31 @@ export class Game {
     }
     
     const velocity = this.snake.getVelocity();
+    
+    // Check and apply food effects (200ms delay)
+    const currentSettings = this.settings.getAllSettings();
+    if (currentSettings.enableFoodEffects && this.foodEffectStartTime > 0 && !this.foodEffectActive) {
+      if (Date.now() >= this.foodEffectStartTime + FOOD_EFFECT_DELAY) {
+        // Activate the pending effect
+        this.foodEffectActive = true;
+        this.foodEffectColor = this.pendingEffectColor;
+        this.foodEffectTemplate = this.pendingEffectTemplate;
+        log(`✨ ${this.foodEffectTemplate.toUpperCase()} effect activated!`);
+        updateStatus(`✨ ${this.foodEffectTemplate.toUpperCase()} mode!`);
+      }
+    }
+    
+    // Check if food effect should end
+    if (this.foodEffectActive && Date.now() >= this.foodEffectEndTime) {
+      this.foodEffectActive = false;
+      this.foodEffectStartTime = 0;
+      this.foodEffectColor = null;
+      this.foodEffectTemplate = null;
+      this.pendingEffectColor = null;
+      this.pendingEffectTemplate = null;
+      log('Effect ended - back to normal');
+      updateStatus('Effect ended');
+    }
     
     if (velocity.x !== 0 || velocity.y !== 0) {
       // Check drunk state
@@ -272,20 +319,42 @@ export class Game {
       return;
     }
     
+    // Add score
+    this.score += food.points;
+    updateScore(this.score);
+    
+    // Handle beer drunk effect
     if (food.type === 'beer') {
-      this.score += food.points;
-      updateScore(this.score);
       this.drunkStartTime = Date.now();
       this.drunkEndTime = Date.now() + CONFIG.DRUNK_DELAY + CONFIG.DRUNK_DURATION;
       this.drunkMoveCounter = 0;
       log(`🍺 Beer consumed! Drunk effect in 1 second... +${food.points} points`);
       updateStatus('🍺 Beer consumed! Drunk effect starting soon...');
     } else {
-      // Normal food
-      this.score += food.points;
-      updateScore(this.score);
       log(`${food.emoji} ${food.name} eaten! +${food.points} point${food.points > 1 ? 's' : ''}`);
       updateStatus(`${food.emoji} ${food.name} +${food.points}`);
+    }
+    
+    // Apply visual food effect (if enabled)
+    const currentSettings = this.settings.getAllSettings();
+    if (currentSettings.enableFoodEffects && food.effect) {
+      // Store original settings if not already stored
+      if (!this.originalSnakeColor) {
+        this.originalSnakeColor = currentSettings.snakeColor;
+        this.originalTemplate = currentSettings.template;
+      }
+      
+      // Set new PENDING effect (will be applied after delay)
+      this.pendingEffectColor = food.effect.color;
+      this.pendingEffectTemplate = food.effect.template;
+      this.foodEffectStartTime = Date.now();
+      this.foodEffectEndTime = Date.now() + FOOD_EFFECT_DELAY + FOOD_EFFECT_DURATION;
+      
+      // Mark as not active yet - will activate after delay
+      // This allows the activation check to trigger
+      this.foodEffectActive = false;
+      
+      log(`⏳ Visual effect starting in ${FOOD_EFFECT_DELAY}ms...`);
     }
     
     // Generate new food
@@ -302,12 +371,29 @@ export class Game {
     const gridSize = this.canvasManager.getGridSize();
     const currentSettings = this.settings.getAllSettings();
     
+    // Determine snake color and template
+    let snakeColor = currentSettings.snakeColor;
+    let snakeTemplate = currentSettings.template;
+    
+    // If a food effect is currently active, use it
+    if (this.foodEffectActive && this.foodEffectColor) {
+      snakeColor = this.foodEffectColor;
+      snakeTemplate = this.foodEffectTemplate;
+    }
+    // If we're in transition (pending effect), keep showing current active effect
+    // This prevents flashing back to original color during the 200ms delay
+    else if (this.foodEffectStartTime > 0 && this.foodEffectColor) {
+      // Keep showing the current effect during transition to new effect
+      snakeColor = this.foodEffectColor;
+      snakeTemplate = this.foodEffectTemplate;
+    }
+    
     this.canvasManager.clear();
     this.obstacleManager.draw(ctx, gridSize);
     this.bulletManager.draw(ctx, gridSize);
     this.particleManager.updateAndDrawExplosions(ctx);
     this.foodManager.draw(ctx, gridSize);
-    this.snake.draw(ctx, gridSize, currentSettings.snakeColor, currentSettings.template);
+    this.snake.draw(ctx, gridSize, snakeColor, snakeTemplate);
     this.particleManager.updateAndDrawParticles(ctx);
   }
   

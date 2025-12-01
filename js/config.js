@@ -21,16 +21,106 @@ export const SPEEDS = [
 ];
 
 export const FOOD_TYPES = [
-  { type: 'apple', name: 'Apple', points: 1, probability: 18, emoji: '🍎' },
-  { type: 'grapes', name: 'Grapes', points: 2, probability: 15, emoji: '🍇' },
-  { type: 'orange', name: 'Orange', points: 2, probability: 15, emoji: '🍊' },
-  { type: 'watermelon', name: 'Watermelon', points: 3, probability: 12, emoji: '🍉' },
-  { type: 'strawberry', name: 'Strawberry', points: 2, probability: 12, emoji: '🍓' },
-  { type: 'banana', name: 'Banana', points: 2, probability: 10, emoji: '🍌' },
-  { type: 'cherry', name: 'Cherry', points: 3, probability: 8, emoji: '🍒' },
-  { type: 'beer', name: 'Beer', points: 5, probability: 7, emoji: '🍺' },
-  { type: 'toxic', name: 'Toxic', points: 0, probability: 3, emoji: '☠️' }
+  { 
+    type: 'apple', 
+    name: 'Apple', 
+    points: 1, 
+    probability: 18, 
+    emoji: '🍎',
+    effect: {
+      color: '#FF0000', // Bright red
+      template: 'classic'
+    }
+  },
+  { 
+    type: 'grapes', 
+    name: 'Grapes', 
+    points: 2, 
+    probability: 15, 
+    emoji: '🍇',
+    effect: {
+      color: '#8B00FF', // Purple
+      template: 'neon'
+    }
+  },
+  { 
+    type: 'orange', 
+    name: 'Orange', 
+    points: 2, 
+    probability: 15, 
+    emoji: '🍊',
+    effect: {
+      color: '#FF6600', // Orange
+      template: 'fire'
+    }
+  },
+  { 
+    type: 'watermelon', 
+    name: 'Watermelon', 
+    points: 3, 
+    probability: 12, 
+    emoji: '🍉',
+    effect: {
+      color: '#00FF00', // Green (not used for rainbow)
+      template: 'rainbow'
+    }
+  },
+  { 
+    type: 'strawberry', 
+    name: 'Strawberry', 
+    points: 2, 
+    probability: 12, 
+    emoji: '🍓',
+    effect: {
+      color: '#FF1493', // Deep pink
+      template: 'neon'
+    }
+  },
+  { 
+    type: 'banana', 
+    name: 'Banana', 
+    points: 2, 
+    probability: 10, 
+    emoji: '🍌',
+    effect: {
+      color: '#FFD700', // Golden yellow
+      template: 'metal'
+    }
+  },
+  { 
+    type: 'cherry', 
+    name: 'Cherry', 
+    points: 3, 
+    probability: 8, 
+    emoji: '🍒',
+    effect: {
+      color: '#DC143C', // Crimson red
+      template: 'fire'
+    }
+  },
+  { 
+    type: 'beer', 
+    name: 'Beer', 
+    points: 5, 
+    probability: 7, 
+    emoji: '🍺',
+    effect: {
+      color: '#FFD700', // Golden
+      template: 'rainbow' // Party mode!
+    }
+  },
+  { 
+    type: 'toxic', 
+    name: 'Toxic', 
+    points: 0, 
+    probability: 3, 
+    emoji: '☠️',
+    effect: null // No effect, instant death
+  }
 ];
+
+export const FOOD_EFFECT_DELAY = 200; // ms delay before effect applies
+export const FOOD_EFFECT_DURATION = 5000; // 5 seconds effect duration
 
 export const OBSTACLE_COLOR_PALETTE = [
   '#8B0000', // Dark red

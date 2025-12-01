@@ -31,6 +31,7 @@ export class FoodManager {
         points: selectedType.points,
         name: selectedType.name,
         emoji: selectedType.emoji,
+        effect: selectedType.effect, // Visual effect data
         spawnTime: Date.now()
       };
       

@@ -9,7 +9,7 @@
 </head>
 <body>
   <!-- Log Display Container (for stacked notifications) -->
-  <div id="logContainer" class="log-container"></div>
+  <div id="logContainer" class="log-container hidden"></div>
   
   <div class="game-container">
     <!-- Header with Score, Speed, and Settings Button -->
@@ -22,7 +22,7 @@
       <button class="settings-btn" onclick="openSettings()">⚙️ Settings</button>
     </div>
     
-    <div class="status" id="status">Ready</div>
+    <div class="status hidden" id="status">Ready</div>
     
     <div class="canvas-wrapper">
       <canvas id="gameCanvas"></canvas>
@@ -130,7 +130,7 @@
       <!-- Toggle Logging -->
       <div class="setting-group">
         <div class="checkbox-row">
-          <input type="checkbox" id="showLoggingToggle" checked>
+          <input type="checkbox" id="showLoggingToggle">
           <label for="showLoggingToggle">Enable Logging</label>
         </div>
       </div>

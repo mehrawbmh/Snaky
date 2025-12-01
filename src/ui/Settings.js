@@ -12,8 +12,14 @@ export class Settings {
     this.bulletSize = 3;
     this.bulletSpeed = 1;
     this.showScoreboard = true;
-    this.showLogging = true;
-    this.enableFoodEffects = true; // NEW: Enable food visual effects
+    this.showLogging = false; // Default false
+    this.enableFoodEffects = true;
+    
+    // New Settings
+    this.enableWalls = true;
+    this.wallColor = '#555555';
+    this.showStatus = false; // Default false
+    
     this.isOpen = false;
   }
   
@@ -37,7 +43,14 @@ export class Settings {
     document.getElementById('showLoggingToggle').checked = this.showLogging;
     document.getElementById('enableFoodEffectsToggle').checked = this.enableFoodEffects;
     
+    // New Settings UI
+    document.getElementById('enableWallsToggle').checked = this.enableWalls;
+    document.getElementById('wallColorInput').value = this.wallColor;
+    document.getElementById('wallColorDisplay').textContent = this.wallColor;
+    document.getElementById('showStatusToggle').checked = this.showStatus;
+
     this.updateObstacleColorPicker();
+    this.updateWallColorPicker(); // Helper to show/hide wall color input based on toggle? Or just always show.
     modal.style.display = 'flex';
   }
   
@@ -66,6 +79,11 @@ export class Settings {
     this.showLogging = document.getElementById('showLoggingToggle').checked;
     this.enableFoodEffects = document.getElementById('enableFoodEffectsToggle').checked;
     
+    // New Settings Apply
+    this.enableWalls = document.getElementById('enableWallsToggle').checked;
+    this.wallColor = document.getElementById('wallColorInput').value;
+    this.showStatus = document.getElementById('showStatusToggle').checked;
+
     const scoreboard = document.getElementById('scoreboard');
     if (scoreboard) {
       scoreboard.classList.toggle('hidden', !this.showScoreboard);
@@ -76,6 +94,12 @@ export class Settings {
       logContainer.classList.toggle('hidden', !this.showLogging);
     }
     
+    // Status Visibility
+    const statusElement = document.getElementById('status');
+    if (statusElement) {
+        statusElement.classList.toggle('hidden', !this.showStatus);
+    }
+
     setLoggingEnabled(this.showLogging);
     this.closeSettings();
     
@@ -90,6 +114,16 @@ export class Settings {
     }
   }
   
+  updateWallColorPicker() {
+      // Can implement logic here if we want to hide wall color when walls are disabled
+      const enabled = document.getElementById('enableWallsToggle').checked;
+      const container = document.getElementById('wallColorContainer');
+      if (container) {
+          container.style.opacity = enabled ? '1' : '0.5';
+          container.style.pointerEvents = enabled ? 'auto' : 'none';
+      }
+  }
+
   getAllSettings() {
     return {
       playerName: this.playerName,
@@ -102,7 +136,10 @@ export class Settings {
       bulletSpeed: this.bulletSpeed,
       showScoreboard: this.showScoreboard,
       showLogging: this.showLogging,
-      enableFoodEffects: this.enableFoodEffects
+      enableFoodEffects: this.enableFoodEffects,
+      enableWalls: this.enableWalls,
+      wallColor: this.wallColor,
+      showStatus: this.showStatus
     };
   }
 }

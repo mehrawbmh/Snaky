@@ -36,7 +36,7 @@ export class Snake {
     return this.segments;
   }
   
-  move(moveX, moveY, tileCount) {
+  move(moveX, moveY, tileCount, wallsEnabled = false) {
     // Store current segments as previous for interpolation
     // Deep copy not strictly needed if we replace the array, but careful with references
     // Actually, since we unshift/pop, the objects themselves (x,y) don't change often, but their position in array does.
@@ -46,11 +46,15 @@ export class Snake {
     let headX = this.segments[0].x + moveX;
     let headY = this.segments[0].y + moveY;
     
-    // Wrap around
-    if (headX < 0) headX = tileCount - 1;
-    if (headY < 0) headY = tileCount - 1;
-    if (headX >= tileCount) headX = 0;
-    if (headY >= tileCount) headY = 0;
+    // Wrap around or Walls
+    if (!wallsEnabled) {
+        if (headX < 0) headX = tileCount - 1;
+        if (headY < 0) headY = tileCount - 1;
+        if (headX >= tileCount) headX = 0;
+        if (headY >= tileCount) headY = 0;
+    } 
+    // If wallsEnabled, we let coordinates go out of bounds. 
+    // The Game loop will check collision.
     
     return { x: headX, y: headY };
   }

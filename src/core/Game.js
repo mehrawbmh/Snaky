@@ -126,6 +126,12 @@ export class Game {
     this.obstacleManager.setColorMode(currentSettings.obstacleColorMode, currentSettings.singleObstacleColor);
     this.bulletManager.setBulletSettings(currentSettings.bulletColor, currentSettings.bulletSize, currentSettings.bulletSpeed);
     
+    // Apply Status Visibility Immediately on Init
+    const statusElement = document.getElementById('status');
+    if (statusElement) {
+        statusElement.classList.toggle('hidden', !currentSettings.showStatus);
+    }
+
     // Generate obstacles
     this.obstacleManager.generate(OBSTACLE_NUMBERS, this.snake.getSegments(), this.canvasManager.getTileCount());
     
@@ -283,8 +289,20 @@ export class Game {
       }
       
       // Move snake
-      const newHead = this.snake.move(moveX, moveY, this.canvasManager.getTileCount());
+      const currentSettings = this.settings.getAllSettings();
+      const newHead = this.snake.move(moveX, moveY, this.canvasManager.getTileCount(), currentSettings.enableWalls);
       
+      // Check wall collision (if walls enabled, newHead might be out of bounds)
+      // If move returned same position (clamped) or out of bounds?
+      // Snake.move logic: if walls enabled, it returns out-of-bounds coordinate.
+      if (currentSettings.enableWalls) {
+          const tileCount = this.canvasManager.getTileCount();
+          if (newHead.x < 0 || newHead.y < 0 || newHead.x >= tileCount || newHead.y >= tileCount) {
+              this.triggerGameOverSequence();
+              return;
+          }
+      }
+
       // Check self collision
       if (this.snake.checkSelfCollision(newHead.x, newHead.y)) {
         this.triggerGameOverSequence();
@@ -326,7 +344,8 @@ export class Game {
             log("Obstacle destroyed! +5 points");
             updateStatus("Obstacle destroyed!");
           }
-        }
+        },
+        currentSettings.enableWalls // Pass wall setting to bullets
       );
       
       // Generate trail particles
@@ -419,6 +438,41 @@ export class Game {
     }
     
     this.canvasManager.clear();
+    
+    // Draw Walls if enabled
+    if (currentSettings.enableWalls) {
+        const wallColor = currentSettings.wallColor;
+        // Draw 4 rectangles for border
+        // Top
+        ctx.fillStyle = wallColor;
+        ctx.fillRect(0, 0, ctx.canvas.width, gridSize);
+        // Bottom
+        ctx.fillRect(0, ctx.canvas.height - gridSize, ctx.canvas.width, gridSize);
+        // Left
+        ctx.fillRect(0, 0, gridSize, ctx.canvas.height);
+        // Right
+        ctx.fillRect(ctx.canvas.width - gridSize, 0, gridSize, ctx.canvas.height);
+        
+        // Add some texture/detail to walls
+        ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+        ctx.lineWidth = 2;
+        // Basic brick pattern
+        const brickSize = gridSize * 2;
+        
+        ctx.beginPath();
+        // Top & Bottom
+        for (let i = 0; i < ctx.canvas.width; i += brickSize) {
+             ctx.rect(i, 0, brickSize, gridSize);
+             ctx.rect(i + brickSize/2, ctx.canvas.height - gridSize, brickSize, gridSize);
+        }
+        // Left & Right
+        for (let i = 0; i < ctx.canvas.height; i += brickSize) {
+             ctx.rect(0, i, gridSize, brickSize);
+             ctx.rect(ctx.canvas.width - gridSize, i + brickSize/2, gridSize, brickSize);
+        }
+        ctx.stroke();
+    }
+
     this.obstacleManager.draw(ctx, gridSize);
     this.bulletManager.draw(ctx, gridSize);
     this.particleManager.updateAndDrawExplosions(ctx);

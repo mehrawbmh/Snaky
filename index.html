@@ -143,6 +143,27 @@
         </div>
       </div>
       
+      <!-- Toggle Walls -->
+      <div class="setting-group">
+        <div class="checkbox-row">
+          <input type="checkbox" id="enableWallsToggle" checked onchange="document.getElementById('wallColorContainer').style.opacity = this.checked ? '1' : '0.5'; document.getElementById('wallColorContainer').style.pointerEvents = this.checked ? 'auto' : 'none';">
+          <label for="enableWallsToggle">🧱 Active Walls (Game Over on touch)</label>
+        </div>
+        <div class="color-row" id="wallColorContainer" style="margin-top: 10px; margin-left: 30px;">
+            <label for="wallColorInput" style="font-weight: normal; margin-bottom: 0;">Wall Color:</label>
+            <input type="color" id="wallColorInput" value="#555555" oninput="document.getElementById('wallColorDisplay').textContent = this.value">
+            <span id="wallColorDisplay">#555555</span>
+        </div>
+      </div>
+
+      <!-- Toggle Status Bar -->
+      <div class="setting-group">
+        <div class="checkbox-row">
+          <input type="checkbox" id="showStatusToggle">
+          <label for="showStatusToggle">Show Status Bar (Floating)</label>
+        </div>
+      </div>
+
       <!-- Modal Buttons -->
       <div class="modal-buttons">
         <button onclick="applySettings()">Apply & Start</button>

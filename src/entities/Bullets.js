@@ -31,7 +31,7 @@ export class BulletManager {
     return true;
   }
   
-  update(obstacles, tileCount, onObstacleHit) {
+  update(obstacles, tileCount, onObstacleHit, wallsEnabled = false) {
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const bullet = this.bullets[i];
       
@@ -39,10 +39,23 @@ export class BulletManager {
       bullet.y += bullet.vy;
       bullet.age++;
       
-      // Remove if out of bounds (Task 4)
-      if (bullet.x < 0 || bullet.y < 0 || bullet.x >= tileCount || bullet.y >= tileCount) {
-        this.bullets.splice(i, 1);
-        continue;
+      // Handle wrapping or wall collision logic for bullets
+      if (wallsEnabled) {
+          // If walls are active, bullets die when hitting the wall
+          if (bullet.x < 0 || bullet.y < 0 || bullet.x >= tileCount || bullet.y >= tileCount) {
+            this.bullets.splice(i, 1);
+            continue;
+          }
+      } else {
+          // If walls are NOT active, bullets still wrap? 
+          // Original request (Task 4) said "bullet should be disappeared when gets out of the map... unlike the snake"
+          // So bullets ALWAYS disappear at boundary regardless of wall setting?
+          // "unlike the snake, it must not come back from the other side of the map" -> Implies no wrap for bullets ever.
+          // So the existing logic is correct for bullets:
+          if (bullet.x < 0 || bullet.y < 0 || bullet.x >= tileCount || bullet.y >= tileCount) {
+            this.bullets.splice(i, 1);
+            continue;
+          }
       }
       
       if (bullet.age > bullet.maxAge) {

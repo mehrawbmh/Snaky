@@ -1,5 +1,5 @@
 // Main Game Module
-import { CONFIG, SPEEDS, FOOD_EFFECT_DELAY, FOOD_EFFECT_DURATION } from './config.js';
+import { CONFIG, SPEEDS, FOOD_EFFECT_DELAY, FOOD_EFFECT_DURATION, OBSTACLE_NUMBERS } from './config.js';
 import { CanvasManager } from './canvas.js';
 import { Snake } from './snake.js';
 import { FoodManager } from './food.js';
@@ -117,7 +117,7 @@ export class Game {
     this.bulletManager.setBulletSettings(currentSettings.bulletColor, currentSettings.bulletSize, currentSettings.bulletSpeed);
     
     // Generate obstacles
-    this.obstacleManager.generate(5, this.snake.getSegments(), this.canvasManager.getTileCount());
+    this.obstacleManager.generate(OBSTACLE_NUMBERS, this.snake.getSegments(), this.canvasManager.getTileCount());
     
     // Generate food
     this.foodManager.generate(
@@ -490,6 +490,5 @@ window.applySettings = function() {
 window.onload = function() {
   gameInstance = new Game();
   displayHighScores();
-  openSettings();
 };
 

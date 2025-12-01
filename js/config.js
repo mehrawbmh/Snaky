@@ -122,6 +122,9 @@ export const FOOD_TYPES = [
 export const FOOD_EFFECT_DELAY = 200; // ms delay before effect applies
 export const FOOD_EFFECT_DURATION = 5000; // 5 seconds effect duration
 
+
+// Obstacle configuration
+export const OBSTACLE_NUMBERS = 15;
 export const OBSTACLE_COLOR_PALETTE = [
   '#8B0000', // Dark red
   '#006400', // Dark green

@@ -31,20 +31,23 @@ let gameStarted = false;
 
 // Food types with different effects
 const foodTypes = [
-  { type: 'apple', name: 'Apple', points: 1, probability: 40 },
+  { type: 'apple', name: 'Apple', points: 1, probability: 30 },
   { type: 'grapes', name: 'Grapes', points: 2, probability: 25 },
   { type: 'orange', name: 'Orange', points: 3, probability: 20 },
-  { type: 'beer', name: 'Beer', points: 5, probability: 10 },
+  { type: 'beer', name: 'Beer', points: 5, probability: 20 },
   { type: 'toxic', name: 'Toxic', points: 0, probability: 5 }
 ];
 
 // Drunk state variables
 let isDrunk = false;
+let drunkStartTime = 0; // When beer was consumed
 let drunkEndTime = 0;
 let drunkMoveCounter = 0;
 
 // Food timer constant (5 seconds)
 const FOOD_LIFETIME = 5000; // milliseconds
+const DRUNK_DELAY = 1000; // 1 second delay before drunk effect starts
+const DRUNK_DURATION = 3000; // 3 seconds of drunk effect
 
 // Settings variables
 let playerName = "Player";
@@ -280,6 +283,7 @@ function initGame() {
   explosions = [];
   particles.length = 0;
   isDrunk = false;
+  drunkStartTime = 0;
   drunkEndTime = 0;
   drunkMoveCounter = 0;
   
@@ -758,11 +762,11 @@ function handleFoodEaten(food) {
     case 'beer':
       score += food.points;
       updateScore();
-      isDrunk = true;
-      drunkEndTime = Date.now() + 3000; // Drunk for 3 seconds
+      drunkStartTime = Date.now();
+      drunkEndTime = Date.now() + DRUNK_DELAY + DRUNK_DURATION; // 1 sec delay + 3 sec drunk
       drunkMoveCounter = 0;
-      log(`Beer! Snake is drunk! +${food.points} points`);
-      updateStatus('🍺 DRUNK! Snake moves randomly!');
+      log(`Beer consumed! Drunk effect in 1 second... +${food.points} points`);
+      updateStatus('🍺 Beer consumed! Drunk effect starting soon...');
       generateFood();
       break;
       
@@ -810,9 +814,17 @@ function gameLoop(currentTime) {
   
   // Only move snake if there's velocity (player has pressed a direction key)
   if (velocityX !== 0 || velocityY !== 0) {
+    // Check if drunk effect should start (after 1 second delay)
+    if (!isDrunk && drunkStartTime > 0 && Date.now() >= drunkStartTime + DRUNK_DELAY) {
+      isDrunk = true;
+      updateStatus('🍺 DRUNK! Snake moves randomly!');
+      log('Drunk effect started!');
+    }
+    
     // Check if drunk effect should end
     if (isDrunk && Date.now() > drunkEndTime) {
       isDrunk = false;
+      drunkStartTime = 0;
       updateStatus('Sober again!');
       log('Drunk effect ended');
     }
@@ -821,18 +833,42 @@ function gameLoop(currentTime) {
     let moveX = velocityX;
     let moveY = velocityY;
     
-    // If drunk, occasionally move in random direction
+    // If drunk, occasionally move in random direction based on current direction
     if (isDrunk) {
       drunkMoveCounter++;
       // Every 2 moves, pick a random direction
       if (drunkMoveCounter % 2 === 0) {
-        const directions = [
+        const directions1 = [
           {x: 0, y: -1}, // up
           {x: 0, y: 1},  // down
-          {x: -1, y: 0}, // left
-          {x: 1, y: 0}   // right
         ];
-        const randomDir = directions[Math.floor(Math.random() * directions.length)];
+
+        const directions2 = [
+          {x: 1, y: 0},   // right
+          {x: -1, y: 0}, // left
+        ];
+
+        let selectedDirections;
+        
+        // Choose direction set based on current movement
+        if (velocityX <= -1) {
+          // Moving left: choose from up or down
+          selectedDirections = directions1;
+        } else if (velocityX >= 1) {
+          // Moving right: choose from up or down
+          selectedDirections = directions1;
+        } else if (velocityY <= -1) {
+          // Moving up: choose from right or left
+          selectedDirections = directions2;
+        } else if (velocityY >= 1) {
+          // Moving down: choose from left or right
+          selectedDirections = directions2;
+        } else {
+          // Fallback: use directions1
+          selectedDirections = directions1;
+        }
+        
+        const randomDir = selectedDirections[Math.floor(Math.random() * selectedDirections.length)];
         moveX = randomDir.x;
         moveY = randomDir.y;
       }

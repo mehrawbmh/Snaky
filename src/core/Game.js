@@ -1,7 +1,8 @@
 // Main Game Module
-import { CONFIG, SPEEDS, FOOD_EFFECT_DELAY, FOOD_EFFECT_DURATION, OBSTACLE_NUMBERS } from '../config/Config.js';
+import { CONFIG, SPEEDS, FOOD_EFFECT_DELAY, FOOD_EFFECT_DURATION, DIFFICULTY_LEVELS, POLICE_SNAKE_CONFIG } from '../config/Config.js';
 import { CanvasManager } from './Canvas.js';
 import { Snake } from '../entities/Snake.js';
+import { PoliceSnake } from '../entities/PoliceSnake.js';
 import { FoodManager } from '../entities/Food.js';
 import { ObstacleManager } from '../entities/Obstacles.js';
 import { BulletManager } from '../entities/Bullets.js';
@@ -16,6 +17,7 @@ export class Game {
   constructor() {
     this.canvasManager = new CanvasManager('gameCanvas');
     this.snake = new Snake();
+    this.policeSnake = new PoliceSnake(this.canvasManager.getTileCount());
     this.foodManager = new FoodManager();
     this.obstacleManager = new ObstacleManager();
     this.bulletManager = new BulletManager();
@@ -34,6 +36,12 @@ export class Game {
     // Time accumulator for smooth loop
     this.timeAccumulator = 0;
     
+    // Police snake state
+    this.policeSnakeEnabled = false;
+    this.policeSpawnTime = 0;
+    this.policeTimeAccumulator = 0;
+    this.lastPlayerVelocity = { x: 0, y: 0 };
+    
     // Drunk state
     this.isDrunk = false;
     this.drunkStartTime = 0;
@@ -43,6 +51,7 @@ export class Game {
     // Dying Animation State
     this.isDying = false;
     this.dyingStartTime = 0;
+    this.deathByPolice = false; // Track if killed by police
     
     // Food effect state
     this.foodEffectActive = false;
@@ -108,6 +117,14 @@ export class Game {
     this.drunkEndTime = 0;
     this.drunkMoveCounter = 0;
     
+    // Reset police snake state
+    this.policeSnake.reset(this.canvasManager.getTileCount());
+    this.policeSnakeEnabled = false;
+    this.policeSpawnTime = 0;
+    this.policeTimeAccumulator = 0;
+    this.lastPlayerVelocity = { x: 0, y: 0 };
+    this.deathByPolice = false;
+    
     // Reset food effects
     this.foodEffectActive = false;
     this.foodEffectStartTime = 0;
@@ -132,13 +149,27 @@ export class Game {
         statusElement.classList.toggle('hidden', !currentSettings.showStatus);
     }
 
-    // Generate obstacles
+    // Generate obstacles based on difficulty
+    const difficultyConfig = DIFFICULTY_LEVELS[currentSettings.difficulty] || DIFFICULTY_LEVELS.medium;
+    const obstacleCount = Math.floor(
+      Math.random() * (difficultyConfig.obstacleMax - difficultyConfig.obstacleMin + 1)
+    ) + difficultyConfig.obstacleMin;
+    
     this.obstacleManager.generate(
-        OBSTACLE_NUMBERS, 
+        obstacleCount, 
         this.snake.getSegments(), 
         this.canvasManager.getTileCount(), 
         currentSettings.enableWalls
     );
+    
+    // Initialize police snake for hard mode
+    if (difficultyConfig.policeSnake) {
+      this.policeSnakeEnabled = true;
+      this.policeSpawnTime = Date.now() + POLICE_SNAKE_CONFIG.spawnDelay;
+      this.policeSnake.setDirectionDelay(POLICE_SNAKE_CONFIG.directionDelay);
+      log('🚔 HARD MODE: Police Snake will spawn in 3 seconds!');
+      updateStatus('🚔 Police incoming!');
+    }
     
     // Generate food
     this.foodManager.generate(
@@ -156,7 +187,7 @@ export class Game {
     
     // Start game loop
     this.lastFrameTime = performance.now();
-    this.gameLoopId = requestAnimationFrame((time) => this.gameLoop(time));
+    this.gameLoop(this.lastFrameTime);
   }
   
   start() {
@@ -201,6 +232,17 @@ export class Game {
         this.timeAccumulator -= targetDelay;
     }
     
+    // Police snake has its own timing (speed 1.1x by default)
+    if (this.policeSnakeEnabled && this.policeSnake.active) {
+      const policeDelay = targetDelay / this.policeSnake.speed;
+      this.policeTimeAccumulator += safeDelta;
+      
+      while (this.policeTimeAccumulator >= policeDelay) {
+        this.updatePoliceSnake();
+        this.policeTimeAccumulator -= policeDelay;
+      }
+    }
+    
     // Interpolation factor for smooth rendering
     const alpha = this.timeAccumulator / targetDelay;
     
@@ -209,6 +251,25 @@ export class Game {
 
   update() {
       if (this.gameOver || this.isDying) return;
+      
+      // Check if police snake should spawn
+      if (this.policeSnakeEnabled && !this.policeSnake.active && Date.now() >= this.policeSpawnTime) {
+        this.policeSnake.activate();
+        log('🚔 POLICE SNAKE HAS SPAWNED! RUN!');
+        updateStatus('🚔 POLICE SNAKE ACTIVE!');
+      }
+      
+      // Track player direction changes for police snake to follow
+      const currentVelocity = this.snake.getVelocity();
+      if (this.policeSnake.active && 
+          (currentVelocity.x !== this.lastPlayerVelocity.x || 
+           currentVelocity.y !== this.lastPlayerVelocity.y)) {
+        // Player changed direction - queue it for police snake
+        if (currentVelocity.x !== 0 || currentVelocity.y !== 0) {
+          this.policeSnake.queueDirectionChange(currentVelocity.x, currentVelocity.y);
+        }
+        this.lastPlayerVelocity = { x: currentVelocity.x, y: currentVelocity.y };
+      }
 
       // Check if food expired
     if (this.foodManager.isExpired()) {
@@ -379,6 +440,52 @@ export class Game {
     }
   }
   
+  updatePoliceSnake() {
+    if (!this.policeSnake.active || this.gameOver || this.isDying) return;
+    
+    // Move police snake
+    const newHead = this.policeSnake.move();
+    if (!newHead) return;
+    
+    // Add new head
+    this.policeSnake.addHead(newHead.x, newHead.y);
+    
+    // Check if police caught the player
+    if (this.policeSnake.checkPlayerCollision(this.snake.getSegments())) {
+      this.policeSnake.startBite();
+      this.deathByPolice = true;
+      log('🚔 ARRESTED! The Police Snake caught you!');
+      updateStatus('🚔 ARRESTED! Toxicated by venom!');
+      this.triggerGameOverSequence();
+      return;
+    }
+    
+    // Check if police ate food (accidentally)
+    const food = this.foodManager.getFood();
+    if (this.policeSnake.checkFoodCollision(food)) {
+      // Police ate the food - speed up to match player
+      const playerSpeedMultiplier = SPEEDS[this.currentSpeedIndex].multiplier;
+      this.policeSnake.matchPlayerSpeed(playerSpeedMultiplier);
+      log('🚔 Police ate food! Speed increased!');
+      updateStatus('🚔 Police getting faster!');
+      
+      // Generate new food
+      const currentSettings = this.settings.getAllSettings();
+      this.foodManager.generate(
+        this.snake.getSegments(),
+        this.obstacleManager.getObstacles(),
+        this.bulletManager.getBullets(),
+        this.canvasManager.getTileCount(),
+        currentSettings.enableWalls
+      );
+      
+      // Don't remove tail - police grows when eating
+    } else {
+      // Normal movement - remove tail
+      this.policeSnake.removeTail();
+    }
+  }
+  
   handleFoodEaten(food) {
     // Handle special foods
     if (food.type === 'toxic') {
@@ -499,6 +606,11 @@ export class Game {
     // Draw snake with interpolation or dying effect
     this.snake.draw(ctx, gridSize, snakeColor, snakeTemplate, alpha, dyingProgress);
     
+    // Draw police snake (if active in hard mode)
+    if (this.policeSnakeEnabled && this.policeSnake.active) {
+      this.policeSnake.draw(ctx, gridSize, alpha);
+    }
+    
     this.particleManager.updateAndDrawParticles(ctx);
   }
   
@@ -524,7 +636,11 @@ export class Game {
       this.gameLoopId = null;
     }
     
-    log(`Game Over! Final score: ${this.score}`);
+    if (this.deathByPolice) {
+      log(`🚔 ARRESTED! Final score: ${this.score}`);
+    } else {
+      log(`Game Over! Final score: ${this.score}`);
+    }
     
     if (this.score > 0) {
       const currentSettings = this.settings.getAllSettings();
@@ -532,7 +648,58 @@ export class Game {
     }
     displayHighScores();
     
-    showGameOver(this.canvasManager.getCanvas(), this.score, this.settings.getAllSettings().playerName);
+    // Show custom death screen for police
+    if (this.deathByPolice) {
+      this.showPoliceDeathScreen();
+    } else {
+      showGameOver(this.canvasManager.getCanvas(), this.score, this.settings.getAllSettings().playerName);
+    }
+  }
+  
+  showPoliceDeathScreen() {
+    const canvas = this.canvasManager.getCanvas();
+    const ctx = canvas.getContext('2d');
+    const playerName = this.settings.getAllSettings().playerName;
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const centerY = canvas.height / 2;
+    
+    // Flashing siren effect on background
+    const sirenPhase = Date.now() / 200;
+    const sirenColor = Math.sin(sirenPhase) > 0 ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 100, 255, 0.1)';
+    ctx.fillStyle = sirenColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Title
+    ctx.font = 'bold 36px Arial';
+    ctx.fillStyle = '#ff0000';
+    ctx.shadowColor = '#ff0000';
+    ctx.shadowBlur = 20;
+    ctx.fillText('🚔 ARRESTED! 🚔', canvas.width / 2, centerY - 150);
+    ctx.shadowBlur = 0;
+    
+    // Subtitle
+    ctx.font = 'bold 20px Arial';
+    ctx.fillStyle = '#00ff00';
+    ctx.fillText('☠️ TOXICATED BY VENOM ☠️', canvas.width / 2, centerY - 100);
+    
+    // Score
+    ctx.font = 'bold 24px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText(`Final Score: ${this.score}`, canvas.width / 2, centerY - 50);
+    
+    // Message
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#cccccc';
+    ctx.fillText('The Police Snake caught you!', canvas.width / 2, centerY + 80);
+    ctx.fillText(`${playerName}, press SPACE or click PLAY to try again`, canvas.width / 2, centerY + 110);
+    
+    showPlayButton();
   }
 
   // Kept for compatibility if needed, but showGameOverScreen is the new internal one

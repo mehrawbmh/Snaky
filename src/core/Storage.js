@@ -2,6 +2,19 @@
 
 let highScores = [];
 
+const settingsKey = "SnakySettings"
+
+export function saveSettings(allSettings) {
+    allSettings['last_update'] = new Date();
+    localStorage.setItem(settingsKey, JSON.stringify(allSettings));
+    console.log('settings saved: ', allSettings);
+}
+
+export function loadSettings() {
+    const saved = localStorage.getItem(settingsKey);
+    return saved ? JSON.parse(saved) : null;
+}
+
 export function saveScore(score, playerName) {
   const now = new Date();
   const scoreEntry = {

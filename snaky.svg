@@ -1,0 +1,37 @@
+<svg width="800" height="300" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="blueGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0 0 1 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
+    
+    <filter id="purpleGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="0 0 1 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
+
+     <filter id="greenGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 18 -7" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="none"/>
+
+  <g transform="translate(50, 100)">
+    <path d="M10 80 Q 30 10, 80 30 T 150 80" stroke="#00f7ff" stroke-width="8" fill="none" filter="url(#blueGlow)" marker-end="url(#snakeHeadMarker)"/>
+    <text x="20" y="100" font-family="Arial, sans-serif" font-weight="bold" font-size="120" fill="#00f7ff" filter="url(#blueGlow)">S</text>
+    
+    <text x="140" y="100" font-family="Arial, sans-serif" font-weight="bold" font-size="120" fill="#00f7ff" filter="url(#blueGlow)">N</text>
+    <text x="260" y="100" font-family="Arial, sans-serif" font-weight="bold" font-size="120" fill="#aa00ff" filter="url(#purpleGlow)">A</text>
+
+    <path d="M350 120 C 350 180, 450 180, 450 120 S 550 60, 550 120" stroke="#aa00ff" stroke-width="8" fill="none" filter="url(#purpleGlow)"/>
+    <text x="380" y="100" font-family="Arial, sans-serif" font-weight="bold" font-size="120" fill="#aa00ff" filter="url(#purpleGlow)">K</text>
+    
+    <text x="500" y="100" font-family="Arial, sans-serif" font-weight="bold" font-size="120" fill="#39ff14" filter="url(#greenGlow)">Y</text>
+  </g>
+  
+  </svg>

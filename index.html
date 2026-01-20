@@ -18,7 +18,7 @@
         <div class="score">Score: <span id="score">0</span></div>
         <div class="speed">Speed: <span id="speed">1x</span></div>
       </div>
-      <div class="game-name">SNAKY</div>
+      <img src="/snaky.png" alt="SNAKY" class="game-logo">
       <button class="settings-btn" onclick="openSettings()">⚙️ Settings</button>
     </div>
     
@@ -56,7 +56,18 @@
   <!-- Settings Modal -->
   <div id="settingsModal" class="modal">
     <div class="modal-content">
+      <button class="modal-close-btn" onclick="closeSettings()">✕</button>
       <h2>⚙️ Game Settings</h2>
+      
+      <!-- Difficulty -->
+      <div class="setting-group">
+        <label for="difficultySelect">🎮 Difficulty:</label>
+        <select id="difficultySelect">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
       
       <!-- Player Name -->
       <div class="setting-group">
@@ -110,13 +121,13 @@
       <!-- Bullet Size -->
       <div class="setting-group">
         <label for="bulletSizeInput">Bullet Size (1-10):</label>
-        <input type="number" id="bulletSizeInput" min="1" max="10" value="3">
+        <input type="number" id="bulletSizeInput" min="1" max="10" value="4">
       </div>
       
       <!-- Bullet Speed -->
       <div class="setting-group">
         <label for="bulletSpeedInput">Bullet Speed (1-5):</label>
-        <input type="number" id="bulletSpeedInput" min="1" max="5" value="1">
+        <input type="number" id="bulletSpeedInput" min="1" max="5" value="3">
       </div>
       
       <!-- Toggle Scoreboard -->

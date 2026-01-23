@@ -44,21 +44,6 @@ export function saveScore(score, playerName) {
   }
 }
 
-export function saveSettings(settings) {
-  const now = new Date();
-  settings['last_update'] = now;
-  console.log('settings saved: ', settings);
-  localStorage.setItem('snakeySettings', JSON.stringify(settings));
-}
-
-export function loadSettings() {
-  const saved = localStorage.getItem('snakeySettings');
-  if (saved) {
-    return JSON.parse(saved);
-  }
-  return {};
-}
-
 function loadScores() {
   try {
     const saved = localStorage.getItem('snakeHighScores');

@@ -72,8 +72,8 @@ export class BulletManager {
           }
          
           // do not remove bullet! let it go till the end of row/column !
-          // this.bullets.splice(i, 1);
-          // break;
+          this.bullets.splice(i, 1);
+          break;
         }
       }
     }

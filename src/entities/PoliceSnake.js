@@ -34,7 +34,7 @@ export class PoliceSnake {
   
   reset(tileCount) {
     this.tileCount = tileCount;
-    this.segments = [{ x: 1, y: 1 }];
+    this.segments = [{ x: Math.floor(Math.random() * 16), y: Math.floor(Math.random() * 16) }];
     this.prevSegments = [{ x: 1, y: 1 }];
     this.velocityX = 0;
     this.velocityY = 0;

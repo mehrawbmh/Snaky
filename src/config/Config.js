@@ -4,7 +4,7 @@ export const CONFIG = {
     TILE_COUNT: 20,
     FOOD_LIFETIME: 5000, // 5 seconds
     DRUNK_DELAY: 1000, // 1 second
-    DRUNK_DURATION: 1500, // 1.5 seconds
+    DRUNK_DURATION: 15000, // 1.5 seconds
     MAX_PARTICLES: 100,
     MAX_EXPLOSIONS: 50,
     MAX_LOG_MESSAGES: 5,
@@ -18,7 +18,10 @@ export const SPEEDS = [
     {multiplier: 2, delay: CONFIG.DELAY_1X / 2, name: "2x"},
     {multiplier: 3, delay: CONFIG.DELAY_1X / 3, name: "3x"},
     {multiplier: 4, delay: CONFIG.DELAY_1X / 4, name: "4x"},
-    {multiplier: 10, delay: CONFIG.DELAY_1X / 10, name: "10x"}
+    {multiplier: 10, delay: CONFIG.DELAY_1X / 10, name: "10x"},
+    {multiplier: 20, delay: CONFIG.DELAY_1X / 20, name: "20x"},
+    {multiplier: 100, delay: CONFIG.DELAY_1X / 100, name: "100x"},
+    {multiplier: 150, delay: CONFIG.DELAY_1X / 150, name: "150x"}
 ];
 
 export const FOOD_TYPES = [
@@ -103,7 +106,7 @@ export const FOOD_TYPES = [
         type: 'beer',
         name: 'Beer',
         points: 5,
-        probability: 7,
+        probability: 700,
         emoji: '🍺',
         effect: {
             color: '#FFD700', // Golden
@@ -114,7 +117,7 @@ export const FOOD_TYPES = [
         type: 'toxic',
         name: 'Toxic',
         points: 0,
-        probability: 3,
+        probability: 0,
         emoji: '☠️',
         effect: null // No effect, instant death
     }

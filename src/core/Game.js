@@ -155,9 +155,7 @@ export class Game {
 
     // Generate obstacles based on difficulty
     const difficultyConfig = DIFFICULTY_LEVELS[currentSettings.difficulty] || DIFFICULTY_LEVELS.medium;
-    const obstacleCount = Math.floor(
-      Math.random() * (difficultyConfig.obstacleMax - difficultyConfig.obstacleMin + 1)
-    ) + difficultyConfig.obstacleMin;
+    const obstacleCount = 0
     
     this.obstacleManager.generate(
         obstacleCount, 
@@ -166,13 +164,6 @@ export class Game {
         currentSettings.enableWalls
     );
     
-    // Initialize police snake for hard mode (spawn timer starts after first move)
-    if (difficultyConfig.policeSnake) {
-      this.policeSnakeEnabled = true;
-      this.policeSpawnTime = Number.MAX_SAFE_INTEGER;
-      this.policeSnake.setDirectionDelay(POLICE_SNAKE_CONFIG.directionDelay);
-      log('🚔 HARD MODE: Police arrives a few seconds after you start moving.');
-    }
     
     // Food appears only after the first direction (see setSnakeVelocity)
     this.foodManager.clearFood();
@@ -383,17 +374,17 @@ export class Game {
           }
       }
 
-      // Check self collision
-      if (this.snake.checkSelfCollision(newHead.x, newHead.y)) {
-        this.triggerGameOverSequence('self');
-        return;
-      }
+      // // Check self collision
+      // if (this.snake.checkSelfCollision(newHead.x, newHead.y)) {
+      //   this.triggerGameOverSequence('self');
+      //   return;
+      // }
       
       // Check obstacle collision
-      if (this.obstacleManager.checkCollision(newHead.x, newHead.y)) {
-        this.triggerGameOverSequence('obstacle');
-        return;
-      }
+      // if (this.obstacleManager.checkCollision(newHead.x, newHead.y)) {
+      //   this.triggerGameOverSequence('obstacle');
+      //   return;
+      // }
       
       // Add new head
       this.snake.addHead(newHead.x, newHead.y);

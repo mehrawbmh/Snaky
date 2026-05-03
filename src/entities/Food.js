@@ -86,7 +86,11 @@ export class FoodManager {
   getFood() {
     return this.currentFood;
   }
-  
+
+  clearFood() {
+    this.currentFood = null;
+  }
+
   isExpired() {
     if (!this.currentFood || !this.currentFood.spawnTime) return false;
     return Date.now() - this.currentFood.spawnTime > CONFIG.FOOD_LIFETIME;

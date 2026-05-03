@@ -148,13 +148,12 @@ export const DIFFICULTY_LEVELS = {
 
 // Police Snake Configuration
 export const POLICE_SNAKE_CONFIG = {
-    baseSpeed: 1.1,           // Base speed multiplier (slightly faster than 1x)
-    directionDelay: 1000,     // Delay before following player's direction (ms) - "silly" delay
-    initialLength: 5,         // Starting body length
-    spawnDelay: 3000,         // Delay before police spawns after game start (ms)
-    speedBoostOnFood: true,   // Speed up when eating food
-    ignoreWalls: true,        // Ghost mode - passes through walls
-    ignoreObstacles: true     // Can also pass through obstacles
+    baseSpeed: 1.1,
+    directionDelay: 1000,     // Re-aim at player after this many ms on same heading
+    initialLength: 5,
+    spawnDelay: 3000,         // After first move, delay before police spawns (ms)
+    speedBoostOnFood: true,
+    sameDirectionFollowMs: 1000
 };
 
 // Obstacle configuration (legacy - now uses DIFFICULTY_LEVELS)

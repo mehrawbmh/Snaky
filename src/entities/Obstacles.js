@@ -31,18 +31,16 @@ export class ObstacleManager {
           color = this.singleObstacleColor;
         }
         
-        // Playable area check
-        let min = 0;
-        let max = tileCount;
-        
-        if (wallsEnabled) {
-            min = 1;
-            max = tileCount - 1;
-        }
+        // Never place on outermost ring (row/col 0 and last row/col)
+        const min = 1;
+        const maxExclusive = tileCount - 1;
+        const span = Math.max(0, maxExclusive - min);
+        const x = span > 0 ? min + Math.floor(Math.random() * span) : min;
+        const y = span > 0 ? min + Math.floor(Math.random() * span) : min;
 
         obstacle = {
-          x: Math.floor(Math.random() * (max - min)) + min,
-          y: Math.floor(Math.random() * (max - min)) + min,
+          x,
+          y,
           color: color,
           health: 1
         };

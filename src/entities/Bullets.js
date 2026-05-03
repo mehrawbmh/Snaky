@@ -31,50 +31,50 @@ export class BulletManager {
     return true;
   }
   
-  update(obstacles, tileCount, onObstacleHit, wallsEnabled = false) {
+  update(obstacles, tileCount, onObstacleHit, wallsEnabled = false, onPoliceHit = null) {
+    const between = (a, b, c) => (a >= b && a <= c) || (a <= b && a >= c);
+
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const bullet = this.bullets[i];
-      
+
       const prevBulletX = bullet.x;
       const prevBulletY = bullet.y;
       bullet.x += bullet.vx;
       bullet.y += bullet.vy;
       bullet.age++;
-      
-      // Handle wrapping or wall collision logic for bullets
+
       if (bullet.x <= 0 || bullet.y <= 0 || bullet.x >= tileCount || bullet.y >= tileCount) {
         this.bullets.splice(i, 1);
-      }      
+        continue;
+      }
 
-
-      // Handle bullet Aging
       if (bullet.age >= bullet.maxAge) {
         this.bullets.splice(i, 1);
         continue;
       }
-      
-      // Use rounded coordinates for better grid collision detection
-      const bulletGridX = Math.round(bullet.x);
-      const bulletGridY = Math.round(bullet.y);
+
+      let removed = false;
 
       for (let j = obstacles.length - 1; j >= 0; j--) {
         const obstacle = obstacles[j];
-        // Check grid position match
-        const between = (a, b, c) => {
-          return (a >= b && a <= c) || (a <= b && a >= c);
-        };
 
         if (between(obstacle.x, prevBulletX, bullet.x) && between(obstacle.y, prevBulletY, bullet.y)) {
           obstacle.health--;
-          
+
           if (onObstacleHit) {
             onObstacleHit(obstacle, j);
           }
-         
-          // do not remove bullet! let it go till the end of row/column !
+
           this.bullets.splice(i, 1);
+          removed = true;
           break;
         }
+      }
+
+      if (removed) continue;
+
+      if (onPoliceHit && onPoliceHit(prevBulletX, prevBulletY, bullet.x, bullet.y)) {
+        this.bullets.splice(i, 1);
       }
     }
   }
